@@ -61,15 +61,9 @@
     margin: 0 auto 12px;
   }
   
-  .ponge-presentation .highlight {
-    background-color: rgba(255,179,71,0.2);
-    padding: 2px 6px;
-    border-radius: 4px;
-    font-weight: 600;
-  }
-  
-  .ponge-presentation em {
-    font-style: italic;
+  .ponge-presentation strong {
+    font-weight: 700;
+    color: #6b4226;
   }
   
   .ponge-presentation .quote {
@@ -134,6 +128,15 @@
   .thanks-section .classes {
     font-weight: 700;
     color: #1b5e20;
+  }
+  
+  .legal-footer {
+    background-color: #f0e6d3;
+    padding: 15px;
+    text-align: center;
+    font-size: 0.75em;
+    color: #8b5a3c;
+    border-top: 1px solid #ffd6a5;
   }
   
   .identification-form {
@@ -836,21 +839,6 @@
     background: #8b5a3c;
   }
   
-  footer {
-    text-align: center;
-    padding: 15px;
-    color: #8b5a3c;
-    font-size: 0.85em;
-    background-color: #fefbf3;
-    line-height: 1.7;
-  }
-  
-  .footer-info .school {
-    font-weight: 700;
-    color: #6b4226;
-    font-size: 1.1em;
-  }
-  
   .message {
     position: fixed;
     top: 50%;
@@ -925,6 +913,133 @@
     line-height: 1.6;
   }
   
+  .admin-panel {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    z-index: 1000;
+  }
+  
+  .admin-btn {
+    background: #6b4226;
+    color: white;
+    border: none;
+    padding: 12px 20px;
+    border-radius: 30px;
+    cursor: pointer;
+    font-family: 'Crimson Text', Georgia, serif;
+    font-weight: 600;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+    transition: transform 0.2s;
+  }
+  
+  .admin-btn:hover {
+    transform: scale(1.05);
+    background: #8b5a3c;
+  }
+  
+  .admin-modal {
+    display: none;
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: white;
+    border-radius: 20px;
+    width: 90%;
+    max-width: 800px;
+    max-height: 80vh;
+    overflow-y: auto;
+    z-index: 10001;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+    padding: 20px;
+  }
+  
+  .admin-modal.visible {
+    display: block;
+  }
+  
+  .admin-modal h3 {
+    color: #6b4226;
+    margin-bottom: 20px;
+    text-align: center;
+    font-size: 1.5em;
+  }
+  
+  .admin-modal .close-modal {
+    float: right;
+    font-size: 1.5em;
+    cursor: pointer;
+    color: #999;
+  }
+  
+  .admin-modal .close-modal:hover {
+    color: #333;
+  }
+  
+  .stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 15px;
+    margin-bottom: 25px;
+  }
+  
+  .stat-card {
+    background: linear-gradient(135deg, #ffd6a5 0%, #ffecd2 100%);
+    padding: 15px;
+    border-radius: 12px;
+    text-align: center;
+  }
+  
+  .stat-card .number {
+    font-size: 2em;
+    font-weight: 700;
+    color: #6b4226;
+  }
+  
+  .stat-card .label {
+    font-size: 0.85em;
+    color: #8b5a3c;
+  }
+  
+  .ranking-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 15px;
+  }
+  
+  .ranking-table th,
+  .ranking-table td {
+    padding: 10px;
+    text-align: center;
+    border-bottom: 1px solid #ffd6a5;
+  }
+  
+  .ranking-table th {
+    background-color: #ffd6a5;
+    color: #6b4226;
+    font-weight: 700;
+  }
+  
+  .ranking-table tr:hover {
+    background-color: #fff3e0;
+  }
+  
+  .refresh-stats {
+    background: #2196f3;
+    color: white;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 20px;
+    cursor: pointer;
+    margin-bottom: 15px;
+    font-family: 'Crimson Text', Georgia, serif;
+  }
+  
+  .refresh-stats:hover {
+    background: #1976d2;
+  }
+  
   @media (max-width: 600px) {
     .lottery-banner h3 {
       font-size: 1.2em;
@@ -958,6 +1073,11 @@
     .result-box .win-code {
       font-size: 1em;
     }
+    
+    .admin-modal {
+      width: 95%;
+      padding: 15px;
+    }
   }
   
   .loader {
@@ -970,13 +1090,15 @@
 </head>
 <body>
 
-<!-- Anti-triche warning -->
+<!-- Chargement de la configuration secrète -->
+<script src="config.js"></script>
+
 <div class="anti-cheat-warning" id="antiCheatWarning">
   <h2>⚠️ Activité suspecte détectée</h2>
   <p>Tu as déjà participé au tirage au sort.<br>Un seul vote par personne est autorisé.</p>
 </div>
 
-<!-- ========== PAGE D'ACCUEIL ========== -->
+<!-- PAGE D'ACCUEIL -->
 <div id="welcomePage">
   <div class="welcome-header">
     <h1>🌸 Printemps des Poètes 2026 🌸</h1>
@@ -984,8 +1106,7 @@
   </div>
   
   <div class="ponge-presentation">
-    <p>Ce concours est organisé par le <strong class="highlight">Centre de Documentation et d'Information</strong> et la discipline <strong class="highlight">Lettres (français)</strong>, pour mettre à l'honneur la créativité de nos élèves. Ensemble, nous célébrons la poésie qui sublime les objets du quotidien, à la manière de Francis Ponge.</p>
-    <p><strong class="highlight">Francis Ponge (1899-1988)</strong><br>Auteur du célèbre recueil <span class="highlight">« Le Parti pris des choses »</span>, Ponge cherche à <strong>rendre justice aux objets du quotidien</strong> — la pierre, le pain, la cigarette —, en leur donnant une voix poétique unique.</p>
+    <p><strong>Francis Ponge (1899-1988)</strong><br>Auteur du célèbre recueil « Le Parti pris des choses », Ponge cherche à rendre justice aux objets du quotidien — la pierre, le pain, la cigarette —, en leur donnant une voix poétique unique.</p>
     <p class="quote">« L'objet est le meilleur modèle pour un art d'écriture. »</p>
   </div>
   
@@ -993,7 +1114,7 @@
     <h3>🎰 Tirage au sort à la fin !</h3>
     <p>En participant, tu peux gagner une récompense.</p>
     <p class="bonus">💡 Bonus : Devine le nom des objets pour chaque poème, pour <strong>multiplier</strong> tes chances !</p>
-    <p class="bonus">🎁 Lots : 6 livres • 10 trousses • 5 chocolats • 3 surprises</p>
+    <p class="bonus">🎁 Lots : 6 livres • 10 trousses • 5 boîtes de chocolats • 3 surprises</p>
   </div>
   
   <div class="thanks-section">
@@ -1019,9 +1140,13 @@
       <div class="error-message" id="errorMsg">Code incorrect ou prénom manquant !</div>
     </div>
   </div>
+  
+  <div class="legal-footer">
+    Lycée Alfred Sauvy - 1 Carrer Alfred Sauvy, 66740 Villelongue-dels-Monts - 04 68 95 34 00
+  </div>
 </div>
 
-<!-- ========== PAGE DE VOTE ========== -->
+<!-- PAGE DE VOTE -->
 <div id="votingPage">
   <div class="vote-header">
     <h1>⭐ Note tous les poèmes pour jouer</h1>
@@ -1039,7 +1164,7 @@
     <p>Chaque bonne réponse <strong>multiplie tes chances</strong> de gagner !</p>
     <div class="devinette-counter" id="devinetteCounter">0 / 0 devinettes correctes</div>
     <div class="warning-5stars" id="warning5Stars">
-      🍕 Mmm... tu as mis 5 étoiles partout ? C'est comme mettre de la mayo sur des frites... froides ! Ton vote sera considéré comme BLANC et tu ne pourras pas gagner de lot. Sois plus créatif ! 😜
+      🍕 Mmm... tu as mis 5 étoiles partout ? Ton vote sera considéré comme BLANC et tu ne pourras pas gagner de lot. Sois plus créatif ! 😜
     </div>
   </div>
 
@@ -1060,17 +1185,12 @@
     <p class="warning-text" id="warningText">⚠️ Tu dois noter tous les poèmes pour participer au tirage.</p>
   </div>
   
-  <footer>
-    <div class="footer-info">
-      <span class="school">Lycée Alfred Sauvy</span><br>
-      1 Carrer Alfred Sauvy, 66740 Villelongue-dels-Monts<br>
-      04 68 95 34 00<br>
-      Printemps des Poètes 2026
-    </div>
-  </footer>
+  <div class="legal-footer">
+    Lycée Alfred Sauvy - 1 Carrer Alfred Sauvy, 66740 Villelongue-dels-Monts - 04 68 95 34 00
+  </div>
 </div>
 
-<!-- ========== PAGE ROULETTE ========== -->
+<!-- PAGE ROULETTE -->
 <div id="roulettePage">
   <div class="roulette-container">
     <h2>🎰 Moment de vérité !</h2>
@@ -1097,6 +1217,58 @@
     
     <button class="quit-btn" id="quitBtn" onclick="logout()">← Retour à l'accueil</button>
   </div>
+  
+  <div class="legal-footer" style="margin-top: 20px; background: transparent; color: white;">
+    Lycée Alfred Sauvy - 1 Carrer Alfred Sauvy, 66740 Villelongue-dels-Monts - 04 68 95 34 00
+  </div>
+</div>
+
+<!-- Admin Panel -->
+<div class="admin-panel" id="adminPanel" style="display: none;">
+  <button class="admin-btn" onclick="showAdminPanel()">📊 Voir les résultats</button>
+</div>
+
+<div class="admin-modal" id="adminModal">
+  <span class="close-modal" onclick="closeAdminPanel()">&times;</span>
+  <h3>📊 Tableau de bord des votes</h3>
+  
+  <div class="stats-grid" id="statsGrid">
+    <div class="stat-card">
+      <div class="number" id="totalVotes">0</div>
+      <div class="label">Total votes</div>
+    </div>
+    <div class="stat-card">
+      <div class="number" id="whiteVotes">0</div>
+      <div class="label">Votes blancs</div>
+    </div>
+    <div class="stat-card">
+      <div class="number" id="totalWinners">0</div>
+      <div class="label">Gagnants</div>
+    </div>
+    <div class="stat-card">
+      <div class="number" id="remainingPrizes">0</div>
+      <div class="label">Lots restants</div>
+    </div>
+  </div>
+  
+  <button class="refresh-stats" onclick="refreshAdminPanel()">🔄 Actualiser</button>
+  <button class="refresh-stats" onclick="exportFullData()" style="background: #4caf50;">📥 Exporter CSV</button>
+  
+  <h4 style="margin-top: 20px;">🏆 Classement des poèmes</h4>
+  <table class="ranking-table" id="rankingTable">
+    <thead>
+      <tr><th>Poème</th><th>Moyenne</th><th>Votes</th><th>Total étoiles</th></tr>
+    </thead>
+    <tbody id="rankingBody"></tbody>
+  没错
+  
+  <h4 style="margin-top: 20px;">🎁 Derniers gagnants</h4>
+  <table class="ranking-table" id="winnersTable">
+    <thead>
+      <tr><th>Prénom</th><th>Lot gagné</th><th>Code</th><th>Date</th></tr>
+    </thead>
+    <tbody id="winnersBody"></tbody>
+  </table>
 </div>
 
 <div class="overlay" id="overlay"></div>
@@ -1115,14 +1287,30 @@ let ipAddress = null;
 let allPoemsData = [];
 let isWhiteVote = false;
 
-// ==================== STOCKAGE DES CODES DÉJÀ UTILISÉS ====================
+// ==================== STOCKAGE LOCAL ====================
 let usedCodes = [];
+let allVotes = [];
+let currentRanking = {};
 
+// ==================== CONFIGURATION GITHUB (depuis config.js) ====================
+let GITHUB_CONFIG = {
+  token: '',
+  repo: 'printemps-poetes-2026',
+  owner: 'concours66740',
+  path: 'votes_data.json'
+};
+
+// Récupérer la configuration depuis config.js
+if (typeof window.GITHUB_CONFIG !== 'undefined') {
+  GITHUB_CONFIG = window.GITHUB_CONFIG;
+} else if (typeof GITHUB_TOKEN !== 'undefined') {
+  GITHUB_CONFIG.token = GITHUB_TOKEN;
+}
+
+// ==================== FONCTIONS STOCKAGE LOCAL ====================
 function loadUsedCodes() {
   const stored = localStorage.getItem('poemes2026_used_codes');
-  if (stored) {
-    usedCodes = JSON.parse(stored);
-  }
+  if (stored) usedCodes = JSON.parse(stored);
 }
 
 function saveUsedCodes() {
@@ -1140,38 +1328,112 @@ function markCodeAsUsed(code) {
   }
 }
 
-// ==================== GESTION DES VOTES ====================
-let allVotes = [];
-
 function loadAllVotes() {
   const stored = localStorage.getItem('poemes2026_all_votes');
-  if (stored) {
-    allVotes = JSON.parse(stored);
-  }
+  if (stored) allVotes = JSON.parse(stored);
 }
 
 function saveAllVotes() {
   localStorage.setItem('poemes2026_all_votes', JSON.stringify(allVotes));
+  updateRanking();
 }
 
 function addVote(voteData) {
   allVotes.push(voteData);
   saveAllVotes();
-  updateRanking();
-  exportVotesToCSV();
+  sendToGitHub();
 }
 
-// ==================== CLASSEMENT AUTOMATIQUE ====================
-let currentRanking = {};
+// ==================== ENVOI VERS GITHUB ====================
+async function sendToGitHub() {
+  if (!GITHUB_CONFIG.token || GITHUB_CONFIG.token === '') {
+    console.log('📁 GitHub non configuré - données sauvegardées localement');
+    return;
+  }
+  
+  const data = {
+    lastUpdate: new Date().toISOString(),
+    totalVotes: allVotes.length,
+    votes: allVotes,
+    ranking: currentRanking,
+    usedCodes: usedCodes
+  };
+  
+  try {
+    const content = btoa(unescape(encodeURIComponent(JSON.stringify(data, null, 2))));
+    
+    const getResponse = await fetch(`https://api.github.com/repos/${GITHUB_CONFIG.owner}/${GITHUB_CONFIG.repo}/contents/${GITHUB_CONFIG.path}`, {
+      headers: { 'Authorization': `token ${GITHUB_CONFIG.token}` }
+    });
+    
+    let sha = null;
+    if (getResponse.ok) {
+      const fileData = await getResponse.json();
+      sha = fileData.sha;
+    }
+    
+    await fetch(`https://api.github.com/repos/${GITHUB_CONFIG.owner}/${GITHUB_CONFIG.repo}/contents/${GITHUB_CONFIG.path}`, {
+      method: 'PUT',
+      headers: {
+        'Authorization': `token ${GITHUB_CONFIG.token}`,
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        message: `Mise à jour des votes - ${new Date().toLocaleString()}`,
+        content: content,
+        sha: sha
+      })
+    });
+    
+    console.log('✅ Données envoyées à GitHub');
+  } catch(error) {
+    console.error('❌ Erreur envoi GitHub:', error);
+  }
+}
 
+async function loadFromGitHub() {
+  if (!GITHUB_CONFIG.token || GITHUB_CONFIG.token === '') {
+    console.log('📁 GitHub non configuré - chargement local');
+    loadAllVotes();
+    return;
+  }
+  
+  try {
+    const response = await fetch(`https://api.github.com/repos/${GITHUB_CONFIG.owner}/${GITHUB_CONFIG.repo}/contents/${GITHUB_CONFIG.path}`, {
+      headers: { 'Authorization': `token ${GITHUB_CONFIG.token}` }
+    });
+    
+    if (response.ok) {
+      const fileData = await response.json();
+      const content = JSON.parse(atob(fileData.content));
+      
+      if (content.votes) {
+        allVotes = content.votes;
+        usedCodes = content.usedCodes || [];
+        saveAllVotes();
+        saveUsedCodes();
+        updateRanking();
+        console.log('✅ Données chargées depuis GitHub');
+      }
+    }
+  } catch(error) {
+    console.log('📁 Aucune donnée GitHub existante');
+    loadAllVotes();
+  }
+}
+
+// ==================== CLASSEMENT ====================
 function updateRanking() {
   for (let i = 1; i <= TOTAL_POEMS; i++) {
     currentRanking[i] = { totalStars: 0, voteCount: 0, average: 0, whiteVotes: 0 };
   }
   
   let totalWhiteVotes = 0;
+  let totalWinners = 0;
   
   for (const vote of allVotes) {
+    if (vote.isWinner) totalWinners++;
+    
     if (vote.isWhiteVote) {
       totalWhiteVotes++;
       for (let i = 1; i <= TOTAL_POEMS; i++) {
@@ -1191,8 +1453,6 @@ function updateRanking() {
   for (let i = 1; i <= TOTAL_POEMS; i++) {
     if (currentRanking[i].voteCount > 0) {
       currentRanking[i].average = currentRanking[i].totalStars / currentRanking[i].voteCount;
-    } else {
-      currentRanking[i].average = 0;
     }
   }
   
@@ -1200,45 +1460,79 @@ function updateRanking() {
   localStorage.setItem('poemes2026_stats', JSON.stringify({
     totalVotes: allVotes.length,
     totalWhiteVotes: totalWhiteVotes,
+    totalWinners: totalWinners,
+    remainingPrizes: getAvailablePrizes().length,
     lastUpdate: new Date().toISOString()
   }));
-  
-  console.log('📊 Classement mis à jour');
 }
 
-function exportVotesToCSV() {
-  let csvContent = "\uFEFFPrénom;Session;Type Vote;";
-  for (let i = 1; i <= TOTAL_POEMS; i++) {
-    csvContent += `Poème_${i}_note;Poème_${i}_devinette;`;
-  }
-  csvContent += "DevinettesCorrectes;Timestamp;IP;EstGagnant;LotGagne;CodeGagne\n";
+function exportFullData() {
+  const fullData = {
+    exportDate: new Date().toISOString(),
+    stats: JSON.parse(localStorage.getItem('poemes2026_stats') || '{}'),
+    ranking: currentRanking,
+    votes: allVotes,
+    usedCodes: usedCodes
+  };
   
-  for (const vote of allVotes) {
-    let line = `${vote.prenom};${vote.sessionId};${vote.isWhiteVote ? 'BLANC' : 'NORMAL'};`;
-    
-    for (let i = 1; i <= TOTAL_POEMS; i++) {
-      const note = vote.ratings[i] || 0;
-      const guessed = vote.devinettesCorrectes && vote.devinettesCorrectes[i] ? 'OUI' : 'NON';
-      line += `${note};${guessed};`;
-    }
-    
-    line += `${vote.correctGuesses};${vote.timestamp};${vote.ip || 'unknown'};${vote.isWinner ? 'OUI' : 'NON'};${vote.prizeWon || ''};${vote.winCode || ''}\n`;
-    csvContent += line;
-  }
-  
-  const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+  const blob = new Blob([JSON.stringify(fullData, null, 2)], { type: 'application/json' });
   const link = document.createElement('a');
   const url = URL.createObjectURL(blob);
   link.setAttribute('href', url);
-  link.setAttribute('download', `votes_complet_${new Date().toISOString().slice(0,19)}.csv`);
-  link.style.display = 'none';
-  document.body.appendChild(link);
+  link.setAttribute('download', `export_complet_${new Date().toISOString().slice(0,19)}.json`);
   link.click();
-  document.body.removeChild(link);
   URL.revokeObjectURL(url);
 }
 
-// ==================== GÉNÉRATION DE CODES UNIQUES ====================
+// ==================== ADMIN PANEL ====================
+function showAdminPanel() {
+  refreshAdminPanel();
+  document.getElementById('adminModal').classList.add('visible');
+  document.getElementById('overlay').style.display = 'block';
+}
+
+function closeAdminPanel() {
+  document.getElementById('adminModal').classList.remove('visible');
+  document.getElementById('overlay').style.display = 'none';
+}
+
+function refreshAdminPanel() {
+  const stats = JSON.parse(localStorage.getItem('poemes2026_stats') || '{"totalVotes":0,"totalWhiteVotes":0,"totalWinners":0,"remainingPrizes":0}');
+  
+  document.getElementById('totalVotes').textContent = stats.totalVotes || 0;
+  document.getElementById('whiteVotes').textContent = stats.totalWhiteVotes || 0;
+  document.getElementById('totalWinners').textContent = stats.totalWinners || 0;
+  document.getElementById('remainingPrizes').textContent = getAvailablePrizes().length;
+  
+  const rankingBody = document.getElementById('rankingBody');
+  rankingBody.innerHTML = '';
+  
+  const sorted = Object.entries(currentRanking)
+    .filter(([_, data]) => data.voteCount > 0)
+    .sort((a, b) => b[1].average - a[1].average);
+  
+  for (const [id, data] of sorted) {
+    const row = rankingBody.insertRow();
+    row.insertCell(0).textContent = id;
+    row.insertCell(1).textContent = data.average.toFixed(2);
+    row.insertCell(2).textContent = data.voteCount;
+    row.insertCell(3).textContent = data.totalStars;
+  }
+  
+  const winnersBody = document.getElementById('winnersBody');
+  winnersBody.innerHTML = '';
+  
+  const winners = allVotes.filter(v => v.isWinner && v.prizeWon).slice(-10).reverse();
+  for (const winner of winners) {
+    const row = winnersBody.insertRow();
+    row.insertCell(0).textContent = winner.prenom;
+    row.insertCell(1).textContent = winner.prizeWon;
+    row.insertCell(2).innerHTML = `<code style="font-size:0.8em">${winner.winCode}</code>`;
+    row.insertCell(3).textContent = new Date(winner.timestamp).toLocaleString();
+  }
+}
+
+// ==================== GESTION DES LOTS ====================
 const PRIZES = {
   LIVRE: { count: 6, prefix: 'GAINLIVRE2026ID', suffix: 'SAUVY', emoji: '📚' },
   TROUSSE: { count: 10, prefix: 'GAINTROUSSESAUVY', suffix: '', emoji: '✏️' },
@@ -1248,40 +1542,24 @@ const PRIZES = {
 
 function getAvailablePrizes() {
   const available = [];
-  
   for (const [type, data] of Object.entries(PRIZES)) {
     for (let i = 1; i <= data.count; i++) {
-      let code = data.prefix;
-      if (type === 'LIVRE') {
-        code = `${data.prefix}${i}${data.suffix}`;
-      } else {
-        code = `${data.prefix}${i}`;
-      }
-      if (!isCodeUsed(code)) {
-        available.push({ type, code, emoji: data.emoji, label: getPrizeLabel(type, i) });
-      }
+      let code = type === 'LIVRE' ? `${data.prefix}${i}${data.suffix}` : `${data.prefix}${i}`;
+      if (!isCodeUsed(code)) available.push({ type, code, emoji: data.emoji, label: getPrizeLabel(type, i) });
     }
   }
-  
   return available;
 }
 
 function getPrizeLabel(type, index) {
-  switch(type) {
-    case 'LIVRE': return `Livre n°${index}`;
-    case 'TROUSSE': return `Trousse n°${index}`;
-    case 'CHOCOLAT': return `Boîte de chocolats n°${index}`;
-    case 'SURPRISE': return `Cadeau surprise n°${index}`;
-    default: return 'Lot';
-  }
+  const labels = { LIVRE: `Livre n°${index}`, TROUSSE: `Trousse n°${index}`, CHOCOLAT: `Boîte de chocolats n°${index}`, SURPRISE: `Cadeau surprise n°${index}` };
+  return labels[type];
 }
 
 function drawRandomPrize() {
   const available = getAvailablePrizes();
   if (available.length === 0) return null;
-  
-  const randomIndex = Math.floor(Math.random() * available.length);
-  const prize = available[randomIndex];
+  const prize = available[Math.floor(Math.random() * available.length)];
   markCodeAsUsed(prize.code);
   return prize;
 }
@@ -1289,13 +1567,8 @@ function drawRandomPrize() {
 // ==================== CALCUL DES CHANCES ====================
 function calculateWinProbability() {
   if (isWhiteVote) return 0;
-  
   let probability = 0.01;
-  
-  for (let i = 0; i < correctGuesses; i++) {
-    probability *= 2;
-  }
-  
+  for (let i = 0; i < correctGuesses; i++) probability *= 2;
   return Math.min(probability, 1);
 }
 
@@ -1306,7 +1579,7 @@ function isAdminIp(ip) {
   if (!ip) return false;
   if (ADMIN_IPS.includes(ip)) return true;
   for (const adminIp of ADMIN_IPS) {
-    if (adminIp.endsWith('.') && ip && ip.startsWith(adminIp)) return true;
+    if (adminIp.endsWith('.') && ip.startsWith(adminIp)) return true;
   }
   return false;
 }
@@ -1316,7 +1589,7 @@ async function getClientIP() {
     const response = await fetch('https://api.ipify.org?format=json');
     const data = await response.json();
     ipAddress = data.ip;
-    console.log('📍 IP détectée :', ipAddress);
+    if (isAdminIp(ipAddress)) document.getElementById('adminPanel').style.display = 'block';
     return ipAddress;
   } catch (error) {
     ipAddress = 'unknown';
@@ -1326,18 +1599,12 @@ async function getClientIP() {
 
 // ==================== ANTI-TRICHE ====================
 function checkIfAlreadyVoted() {
-  if (isAdminIp(ipAddress)) {
-    console.log('👑 Mode admin : pas de limitation');
-    return false;
-  }
-  const hasVoted = localStorage.getItem('poemes2026_hasVoted_' + userSessionId);
-  return hasVoted === 'true';
+  if (isAdminIp(ipAddress)) return false;
+  return localStorage.getItem('poemes2026_hasVoted_' + userSessionId) === 'true';
 }
 
 function markAsVoted() {
-  if (!isAdminIp(ipAddress)) {
-    localStorage.setItem('poemes2026_hasVoted_' + userSessionId, 'true');
-  }
+  if (!isAdminIp(ipAddress)) localStorage.setItem('poemes2026_hasVoted_' + userSessionId, 'true');
 }
 
 function showAntiCheatWarning() {
@@ -1349,70 +1616,28 @@ function showAntiCheatWarning() {
 
 // ==================== VOTE BLANC ====================
 function confirmQuitVote() {
-  const humorMessages = [
-    "🍕 Abandonner ? C'est comme commander une pizza sans fromage... Tu es sûr(e) ?",
-    "🏃‍♂️ Tu pars déjà ? La poésie t'a fait peur ? Un petit effort !",
-    "😴 Tu as la flemme de noter 21 poèmes ? On comprend... Mais c'est dommage !",
-    "🎭 Abandonner ? C'est comme quitter un film juste avant la fin du suspense !",
-    "🍪 Tu préfères manger des cookies que voter ? Acceptable... mais dommage !",
-    "🐢 Même un escargot va jusqu'au bout ! Allez, courage !",
-    "🎪 Tu veux quitter le cirque avant le numéro du lion ? Réfléchis bien !"
-  ];
-  
-  const randomMsg = humorMessages[Math.floor(Math.random() * humorMessages.length)];
-  
-  if (confirm(randomMsg + "\n\nClique sur OK pour confirmer l'abandon (ton vote sera BLANC et tu ne pourras pas gagner de lot)")) {
+  const messages = ["🍕 Abandonner ? C'est comme une pizza sans fromage...", "🏃‍♂️ Tu pars déjà ?", "😴 La flemme de voter ?", "🐢 Même un escargot va jusqu'au bout !"];
+  if (confirm(messages[Math.floor(Math.random() * messages.length)] + "\n\nTon vote sera BLANC et tu ne pourras pas gagner de lot")) {
     submitWhiteVote();
   }
 }
 
 async function submitWhiteVote() {
-  if (checkIfAlreadyVoted()) {
-    showAntiCheatWarning();
-    return;
-  }
+  if (checkIfAlreadyVoted()) { showAntiCheatWarning(); return; }
   
   isWhiteVote = true;
-  
-  const voteData = {
-    sessionId: userSessionId,
-    prenom: userPrenom,
-    ratings: {},
-    devinettesCorrectes: {},
-    correctGuesses: 0,
-    isWhiteVote: true,
-    timestamp: Date.now(),
-    ip: ipAddress,
-    isWinner: false
-  };
-  
-  addVote(voteData);
+  addVote({ sessionId: userSessionId, prenom: userPrenom, ratings: {}, devinettesCorrectes: {}, correctGuesses: 0, isWhiteVote: true, timestamp: Date.now(), ip: ipAddress, isWinner: false });
   markAsVoted();
-  
-  showMessage('humor', '🍕 Vote blanc enregistré ! Tu as choisi la voie de la facilité... Pas de lot pour toi cette fois ! Mais merci quand même pour ta participation ! 😜');
   
   document.getElementById('votingPage').style.display = 'none';
   document.getElementById('roulettePage').style.display = 'flex';
-  updateRouletteBonusInfo();
   
   setTimeout(() => {
-    const resultBox = document.getElementById('resultBox');
-    const resultTitle = document.getElementById('resultTitle');
-    const resultText = document.getElementById('resultText');
-    const spinBtn = document.getElementById('spinBtn');
-    const quitBtn = document.getElementById('quitBtn');
-    
-    resultBox.className = 'result-box white-vote';
-    resultTitle.textContent = '🍕 Vote blanc !';
-    resultText.innerHTML = `
-      Tu as choisi l'abandon...<br><br>
-      <strong>Ton vote a été enregistré comme BLANC.</strong><br><br>
-      📝 Les poètes te remercient quand même pour ta visite !<br>
-      🎁 Pas de lot cette fois, mais tu peux revenir pour les prochains concours !
-    `;
-    
-    if (spinBtn) spinBtn.style.display = 'none';
-    if (quitBtn) quitBtn.classList.add('visible');
+    document.getElementById('resultBox').className = 'result-box white-vote';
+    document.getElementById('resultTitle').textContent = '🍕 Vote blanc !';
+    document.getElementById('resultText').innerHTML = 'Ton vote a été enregistré comme BLANC.<br>Pas de lot cette fois, mais merci !';
+    document.getElementById('spinBtn').style.display = 'none';
+    document.getElementById('quitBtn').classList.add('visible');
   }, 500);
 }
 
@@ -1424,20 +1649,15 @@ async function loadPoems() {
     const parser = new DOMParser();
     const doc = parser.parseFromString(html, 'text/html');
     const poemsData = doc.getElementById('poemes-data');
+    if (!poemsData) throw new Error('poems.html non trouvé');
     
-    if (!poemsData) {
-      throw new Error('poems.html non trouvé');
-    }
-    
-    const poems = Array.from(poemsData.querySelectorAll('.poeme-card'));
+    let poems = Array.from(poemsData.querySelectorAll('.poeme-card'));
     TOTAL_POEMS = poems.length;
     
     for (let i = poems.length - 1; i > 0; i--) {
       const j = Math.floor(Math.random() * (i + 1));
       [poems[i], poems[j]] = [poems[j], poems[i]];
     }
-    
-    allPoemsData = poems;
     
     document.getElementById('devinetteCounter').textContent = `0 / ${TOTAL_POEMS} devinettes correctes`;
     document.getElementById('progress').textContent = `0 / ${TOTAL_POEMS} poèmes notés`;
@@ -1448,18 +1668,13 @@ async function loadPoems() {
     poems.forEach((poem, index) => {
       const poemId = index + 1;
       const newPoem = poem.cloneNode(true);
-      
       newPoem.setAttribute('data-id', poemId);
       const answer = newPoem.getAttribute('data-answer') || '';
-      const validAnswersAttr = newPoem.getAttribute('data-valid-answers');
-      let validAnswers = [];
-      if (validAnswersAttr) {
-        try {
-          validAnswers = JSON.parse(validAnswersAttr);
-        } catch(e) { validAnswers = [answer]; }
-      } else {
-        validAnswers = [answer];
-      }
+      let validAnswers = [answer];
+      try {
+        const attr = newPoem.getAttribute('data-valid-answers');
+        if (attr) validAnswers = JSON.parse(attr);
+      } catch(e) {}
       
       const input = newPoem.querySelector('.devinette-input input');
       if (input) {
@@ -1468,57 +1683,39 @@ async function loadPoems() {
       }
       
       const btn = newPoem.querySelector('.devinette-btn');
-      if (btn) {
-        btn.setAttribute('onclick', `checkAnswer(${poemId}, '${answer}', ${JSON.stringify(validAnswers).replace(/"/g, '&quot;')})`);
-      }
+      if (btn) btn.setAttribute('onclick', `checkAnswer(${poemId}, '${answer}', ${JSON.stringify(validAnswers).replace(/"/g, '&quot;')})`);
       
       const resultDiv = newPoem.querySelector('.devinette-result');
-      if (resultDiv) {
-        resultDiv.id = `result${poemId}`;
-      }
+      if (resultDiv) resultDiv.id = `result${poemId}`;
       
       const starsDiv = newPoem.querySelector('.stars');
       if (starsDiv) {
         starsDiv.setAttribute('data-poem', poemId);
-        const stars = starsDiv.querySelectorAll('.star');
-        stars.forEach((star, starIndex) => {
+        starsDiv.querySelectorAll('.star').forEach((star, starIndex) => {
           star.setAttribute('onclick', `rate(${poemId}, ${starIndex + 1})`);
           star.classList.remove('selected', 'active');
         });
       }
       
       const numberSpan = newPoem.querySelector('.poeme-number');
-      if (numberSpan) {
-        numberSpan.textContent = poemId;
-      }
+      if (numberSpan) numberSpan.textContent = poemId;
       
       carousel.appendChild(newPoem);
     });
-    
-    console.log(`${TOTAL_POEMS} poèmes chargés et mélangés`);
-    
-  } catch (error) {
-    console.error('Erreur:', error);
-    document.getElementById('carousel').innerHTML = '<div class="loader">❌ Erreur chargement des poèmes. Vérifie que poems.html existe.</div>';
+  } catch(error) {
+    document.getElementById('carousel').innerHTML = '<div class="loader">❌ Erreur chargement des poèmes</div>';
   }
 }
 
 // ==================== FONCTIONS DE VOTE ====================
 function checkAnswer(poemId, correctAnswer, validAnswersArray) {
-  if (checkIfAlreadyVoted()) {
-    showAntiCheatWarning();
-    return;
-  }
+  if (checkIfAlreadyVoted()) { showAntiCheatWarning(); return; }
   
   const input = document.getElementById(`devinette${poemId}`);
   if (!input) return;
   
-  const resultDiv = document.getElementById(`result${poemId}`);
   const userAnswer = input.value.trim().toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
-  const card = input.closest('.poeme-card');
-  
-  let accepted = validAnswersArray || [correctAnswer];
-  accepted = accepted.map(a => a.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, ''));
+  let accepted = (validAnswersArray || [correctAnswer]).map(a => a.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, ''));
   
   if (accepted.includes(userAnswer)) {
     if (!devinettesCorrectes[poemId]) {
@@ -1527,23 +1724,20 @@ function checkAnswer(poemId, correctAnswer, validAnswersArray) {
       updateDevinetteCounter();
     }
     input.classList.add('correct');
-    input.classList.remove('wrong');
     input.disabled = true;
+    const resultDiv = document.getElementById(`result${poemId}`);
     if (resultDiv) {
       resultDiv.textContent = '✓ Bonne réponse ! + Multiplicateur !';
       resultDiv.className = 'devinette-result success';
     }
-    
-    if (card && !card.classList.contains('guessed')) {
-      card.classList.add('guessed');
-    }
+    input.closest('.poeme-card')?.classList.add('guessed');
   } else {
     input.classList.add('wrong');
+    const resultDiv = document.getElementById(`result${poemId}`);
     if (resultDiv) {
       resultDiv.textContent = '✗ Essaie encore...';
       resultDiv.className = 'devinette-result error';
     }
-    
     setTimeout(() => {
       input.classList.remove('wrong');
       if (resultDiv) resultDiv.textContent = '';
@@ -1552,163 +1746,84 @@ function checkAnswer(poemId, correctAnswer, validAnswersArray) {
 }
 
 function updateDevinetteCounter() {
-  const counter = document.getElementById('devinetteCounter');
-  if (counter) counter.textContent = `${correctGuesses} / ${TOTAL_POEMS} devinettes correctes`;
-  
-  const bonusIndicator = document.getElementById('bonusIndicator');
-  if (correctGuesses >= 1 && bonusIndicator) {
-    bonusIndicator.classList.add('visible');
-    const multiplier = Math.pow(2, correctGuesses);
-    bonusIndicator.innerHTML = `🎯 Bonus actif ! ${multiplier > 100 ? 'Chance maximisée' : 'x' + multiplier + ' de chances'}`;
+  document.getElementById('devinetteCounter').textContent = `${correctGuesses} / ${TOTAL_POEMS} devinettes correctes`;
+  if (correctGuesses >= 1) {
+    document.getElementById('bonusIndicator').classList.add('visible');
+    document.getElementById('bonusIndicator').innerHTML = `🎯 Bonus actif ! x${Math.min(Math.pow(2, correctGuesses), 999)} de chances`;
   }
-  
   updateRouletteBonusInfo();
 }
 
 function updateRouletteBonusInfo() {
   const info = document.getElementById('rouletteBonusInfo');
-  if (!info) return;
-  
   if (isWhiteVote) {
-    info.innerHTML = `<strong>🍕 Vote blanc</strong><br>Pas de chance de gagner cette fois !`;
+    info.innerHTML = '<strong>🍕 Vote blanc</strong><br>Pas de chance de gagner';
     info.classList.add('no-bonus');
-    return;
-  }
-  
-  const multiplier = Math.pow(2, correctGuesses);
-  
-  if (correctGuesses >= 1) {
-    info.innerHTML = `<strong style="color: #4caf50;">🎯 Bonus activé !</strong><br>Multiplicateur : x${multiplier > 100 ? 'MAX' : multiplier}<br><small>${correctGuesses} bonne${correctGuesses > 1 ? 's' : ''} réponse${correctGuesses > 1 ? 's' : ''}</small>`;
+  } else if (correctGuesses >= 1) {
+    info.innerHTML = `<strong style="color: #4caf50;">🎯 Bonus activé !</strong><br>Multiplicateur : x${Math.min(Math.pow(2, correctGuesses), 999)}<br><small>${correctGuesses} bonne${correctGuesses > 1 ? 's' : ''} réponse${correctGuesses > 1 ? 's' : ''}</small>`;
     info.classList.remove('no-bonus');
   } else {
-    info.innerHTML = `<strong>Aucun bonus activé</strong><br>Multiplicateur : x1<br><small>Devine des objets pour multiplier tes chances !</small>`;
+    info.innerHTML = '<strong>Aucun bonus activé</strong><br>Multiplicateur : x1<br><small>Devine des objets pour multiplier tes chances !</small>';
     info.classList.add('no-bonus');
   }
 }
 
 function rate(poemId, stars) {
-  if (checkIfAlreadyVoted()) {
-    showAntiCheatWarning();
-    return;
-  }
+  if (checkIfAlreadyVoted()) { showAntiCheatWarning(); return; }
   
   ratings[poemId] = stars;
-  
   const starsContainer = document.querySelector(`.stars[data-poem="${poemId}"]`);
   if (starsContainer) {
-    const starElements = starsContainer.querySelectorAll('.star');
-    starElements.forEach((star, index) => {
-      star.classList.remove('selected', 'active');
-      if (index < stars) {
-        star.classList.add('selected');
-      }
+    starsContainer.querySelectorAll('.star').forEach((star, index) => {
+      star.classList.toggle('selected', index < stars);
     });
   }
-  
   updateProgress();
   checkAllFiveStars();
 }
 
 function checkAllFiveStars() {
-  const ratedCount = Object.keys(ratings).length;
-  if (ratedCount === TOTAL_POEMS && TOTAL_POEMS > 0) {
-    let allFive = true;
-    for (let i = 1; i <= TOTAL_POEMS; i++) {
-      if (ratings[i] !== 5) {
-        allFive = false;
-        break;
-      }
-    }
-    
-    const warningDiv = document.getElementById('warning5Stars');
-    if (allFive) {
-      warningDiv.classList.add('visible');
-      isWhiteVote = true;
-    } else {
-      warningDiv.classList.remove('visible');
-      if (!isWhiteVote) {
-        isWhiteVote = false;
-      }
-    }
+  if (Object.keys(ratings).length === TOTAL_POEMS) {
+    const allFive = Object.values(ratings).every(r => r === 5);
+    document.getElementById('warning5Stars').classList.toggle('visible', allFive);
+    isWhiteVote = allFive;
   }
 }
 
 function updateProgress() {
   const rated = Object.keys(ratings).length;
-  const progressElem = document.getElementById('progress');
+  document.getElementById('progress').textContent = `${rated} / ${TOTAL_POEMS} poèmes notés`;
   const submitBtn = document.getElementById('submitBtn');
-  const warningText = document.getElementById('warningText');
-  
-  if (progressElem) progressElem.textContent = `${rated} / ${TOTAL_POEMS} poèmes notés`;
-  
-  if (rated === TOTAL_POEMS && TOTAL_POEMS > 0) {
-    if (submitBtn) {
-      submitBtn.disabled = false;
-      submitBtn.textContent = '🎰 Lancer la roulette !';
-    }
-    if (warningText) warningText.style.display = 'none';
+  if (rated === TOTAL_POEMS) {
+    submitBtn.disabled = false;
+    submitBtn.textContent = '🎰 Lancer la roulette !';
+    document.getElementById('warningText').style.display = 'none';
   } else {
-    if (submitBtn) submitBtn.disabled = true;
-    if (warningText) warningText.style.display = 'block';
+    submitBtn.disabled = true;
+    document.getElementById('warningText').style.display = 'block';
   }
 }
 
 function scrollCarousel(direction) {
   const wrapper = document.getElementById('carouselWrapper');
-  if (wrapper) {
-    const scrollAmount = wrapper.clientWidth * 0.9;
-    wrapper.scrollBy({ left: direction * scrollAmount, behavior: 'smooth' });
-  }
+  wrapper.scrollBy({ left: direction * wrapper.clientWidth * 0.9, behavior: 'smooth' });
 }
 
 // ==================== SOUMISSION ET ROULETTE ====================
 async function submitVotes() {
-  if (checkIfAlreadyVoted()) {
-    showAntiCheatWarning();
-    return;
-  }
+  if (checkIfAlreadyVoted()) { showAntiCheatWarning(); return; }
+  if (Object.keys(ratings).length < TOTAL_POEMS) { showMessage('error', `Note les ${TOTAL_POEMS} poèmes !`); return; }
   
-  const rated = Object.keys(ratings).length;
-  if (rated < TOTAL_POEMS) {
-    showMessage('error', `Note les ${TOTAL_POEMS} poèmes !`);
-    return;
-  }
+  const allFive = Object.values(ratings).every(r => r === 5);
+  if (allFive && !confirm("🍕 Tu as mis 5 étoiles partout ! Ton vote sera BLANC. Confirmer ?")) return;
+  if (allFive) isWhiteVote = true;
   
-  let allFive = true;
-  for (let i = 1; i <= TOTAL_POEMS; i++) {
-    if (ratings[i] !== 5) {
-      allFive = false;
-      break;
-    }
-  }
-  
-  if (allFive) {
-    isWhiteVote = true;
-    if (!confirm("🍕 Attention ! Tu as mis 5 étoiles à TOUS les poèmes. C'est un peu suspect...\n\nClique sur OK pour confirmer ton VOTE BLANC (tu ne pourras pas gagner de lot)")) {
-      return;
-    }
-  }
-  
-  const voteData = {
-    sessionId: userSessionId,
-    prenom: userPrenom,
-    ratings: ratings,
-    devinettesCorrectes: devinettesCorrectes,
-    correctGuesses: correctGuesses,
-    isWhiteVote: isWhiteVote,
-    timestamp: Date.now(),
-    ip: ipAddress,
-    isWinner: false
-  };
-  
-  addVote(voteData);
+  addVote({ sessionId: userSessionId, prenom: userPrenom, ratings, devinettesCorrectes, correctGuesses, isWhiteVote, timestamp: Date.now(), ip: ipAddress, isWinner: false });
   markAsVoted();
-  
-  showMessage('success', '✅ Votes enregistrés ! Lance la roulette !');
-  updateRouletteBonusInfo();
   
   document.getElementById('votingPage').style.display = 'none';
   document.getElementById('roulettePage').style.display = 'flex';
+  updateRouletteBonusInfo();
 }
 
 function spinRoulette() {
@@ -1719,108 +1834,59 @@ function spinRoulette() {
   const resultText = document.getElementById('resultText');
   const quitBtn = document.getElementById('quitBtn');
   
-  if (checkIfAlreadyVoted() && !isAdminIp(ipAddress)) {
-    showAntiCheatWarning();
-    return;
-  }
-  
   btn.disabled = true;
   btn.textContent = 'La roulette tourne...';
-  
-  if (wheel) wheel.classList.add('spinning');
+  wheel.classList.add('spinning');
   
   setTimeout(() => {
-    if (wheel) wheel.classList.remove('spinning');
+    wheel.classList.remove('spinning');
     
     const lastVoteIndex = allVotes.findIndex(v => v.sessionId === userSessionId);
     if (lastVoteIndex !== -1) {
       if (isWhiteVote) {
-        allVotes[lastVoteIndex].isWinner = false;
-        saveAllVotes();
-        
         resultBox.className = 'result-box white-vote';
-        resultTitle.textContent = '🍕 Vote blanc confirmé !';
-        resultText.innerHTML = `
-          Tu as mis 5 étoiles partout... ou tu as abandonné !<br><br>
-          <strong>Ton vote a été enregistré comme BLANC.</strong><br><br>
-          📝 Pour gagner des lots, il faut être plus créatif dans tes notes !<br>
-          🎁 Pas de lot cette fois, mais merci d'avoir participé !
-        `;
-        
-        if (btn) btn.style.display = 'none';
-        if (quitBtn) quitBtn.classList.add('visible');
-        return;
-      }
-      
-      const probability = calculateWinProbability();
-      const random = Math.random();
-      const isWinner = random < probability;
-      
-      if (isWinner) {
-        const prize = drawRandomPrize();
-        
-        if (prize) {
-          allVotes[lastVoteIndex].isWinner = true;
-          allVotes[lastVoteIndex].prizeWon = prize.label;
-          allVotes[lastVoteIndex].winCode = prize.code;
-          saveAllVotes();
-          
-          resultBox.className = 'result-box winner';
-          resultTitle.innerHTML = `${prize.emoji} FÉLICITATIONS ! ${prize.emoji}`;
-          resultText.innerHTML = `
-            <strong>Tu as gagné : ${prize.label}</strong><br><br>
-            <div class="win-code">
-              🔑 CODE À CONSERVER :<br>
-              <strong style="font-size: 1.3em;">${prize.code}</strong>
-            </div>
-            <div class="code-warning">
-              ⚠️ <strong>IMPORTANT :</strong><br>
-              📸 Prends ce code en photo ou note-le sur un papier.<br>
-              🎁 Présente ce code au CDI pour récupérer ton lot.<br>
-              ❌ Ne ferme pas cette page avant d'avoir noté le code !<br>
-              🔐 Chaque code est unique et ne peut être utilisé qu'une seule fois.
-            </div>
-          `;
-          createConfetti();
+        resultTitle.textContent = '🍕 Vote blanc';
+        resultText.innerHTML = 'Ton vote a été enregistré comme BLANC.<br>Pas de lot cette fois.';
+      } else {
+        const isWinner = Math.random() < calculateWinProbability();
+        if (isWinner) {
+          const prize = drawRandomPrize();
+          if (prize) {
+            allVotes[lastVoteIndex].isWinner = true;
+            allVotes[lastVoteIndex].prizeWon = prize.label;
+            allVotes[lastVoteIndex].winCode = prize.code;
+            saveAllVotes();
+            sendToGitHub();
+            
+            resultBox.className = 'result-box winner';
+            resultTitle.innerHTML = `${prize.emoji} FÉLICITATIONS !`;
+            resultText.innerHTML = `<strong>Tu as gagné : ${prize.label}</strong><br><br>
+              <div class="win-code">🔑 CODE :<br><strong>${prize.code}</strong></div>
+              <div class="code-warning">📸 Prends ce code en photo !<br>🎁 Présente-le au CDI !</div>`;
+            createConfetti();
+          } else {
+            resultBox.className = 'result-box loser';
+            resultTitle.textContent = '😔 Plus de lots';
+            resultText.innerHTML = 'Tous les lots ont été distribués.';
+          }
         } else {
           resultBox.className = 'result-box loser';
-          resultTitle.textContent = '😔 Plus de lots disponibles...';
-          resultText.innerHTML = `Tous les lots ont déjà été distribués.<br>Merci d'avoir participé !`;
+          resultTitle.textContent = '🍀 Pas de chance...';
+          resultText.innerHTML = 'Merci d\'avoir participé !';
         }
-      } else {
-        allVotes[lastVoteIndex].isWinner = false;
-        saveAllVotes();
-        
-        resultBox.className = 'result-box loser';
-        resultTitle.textContent = '🍀 Pas de chance...';
-        resultText.innerHTML = `
-          Tu n'as pas gagné cette fois.<br><br>
-          <strong>Merci d'avoir participé et voté pour nos poètes !</strong>
-        `;
       }
     }
     
-    if (btn) btn.style.display = 'none';
-    if (quitBtn) quitBtn.classList.add('visible');
-    
+    btn.style.display = 'none';
+    quitBtn.classList.add('visible');
     updateRanking();
-    
   }, 3000);
 }
 
 function createConfetti() {
-  const colors = ['#ff6b6b', '#ffd93d', '#6bcf7f', '#4d96ff', '#ffb347'];
   for (let i = 0; i < 100; i++) {
     const confetti = document.createElement('div');
-    confetti.style.position = 'fixed';
-    confetti.style.width = '10px';
-    confetti.style.height = '10px';
-    confetti.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
-    confetti.style.left = Math.random() * 100 + 'vw';
-    confetti.style.top = '-10px';
-    confetti.style.borderRadius = '50%';
-    confetti.style.zIndex = '9999';
-    confetti.style.animation = `fall ${2 + Math.random() * 3}s linear`;
+    confetti.style.cssText = `position:fixed; width:10px; height:10px; background:${['#ff6b6b','#ffd93d','#6bcf7f','#4d96ff'][Math.floor(Math.random()*4)]}; left:${Math.random()*100}vw; top:-10px; border-radius:50%; z-index:9999; animation:fall ${2+Math.random()*3}s linear`;
     document.body.appendChild(confetti);
     setTimeout(() => confetti.remove(), 5000);
   }
@@ -1837,31 +1903,22 @@ async function enterVoting() {
   }
   
   userPrenom = prenom.charAt(0).toUpperCase() + prenom.slice(1).toLowerCase();
-  
   document.getElementById('errorMsg').style.display = 'none';
-  
   await getClientIP();
   
   userSessionId = 'session_' + Date.now() + '_' + Math.random().toString(36).substr(2, 8);
-  
-  if (checkIfAlreadyVoted() && !isAdminIp(ipAddress)) {
-    showAntiCheatWarning();
-    return;
-  }
+  if (checkIfAlreadyVoted() && !isAdminIp(ipAddress)) { showAntiCheatWarning(); return; }
   
   ratings = {};
   devinettesCorrectes = {};
   correctGuesses = 0;
   isWhiteVote = false;
   document.getElementById('warning5Stars').classList.remove('visible');
-  
-  document.getElementById('userBadge').textContent = `${userPrenom}`;
+  document.getElementById('userBadge').textContent = userPrenom;
   document.getElementById('welcomePage').style.display = 'none';
   document.getElementById('votingPage').style.display = 'flex';
   
-  if (TOTAL_POEMS === 0) {
-    await loadPoems();
-  }
+  if (TOTAL_POEMS === 0) await loadPoems();
 }
 
 function logout() {
@@ -1881,40 +1938,20 @@ function logout() {
     }
   }
   
-  document.querySelectorAll('.star').forEach(star => {
-    star.classList.remove('selected', 'active');
-  });
-  
-  const wheel = document.getElementById('wheel');
-  if (wheel) wheel.classList.remove('spinning');
-  
-  const spinBtn = document.getElementById('spinBtn');
-  if (spinBtn) {
-    spinBtn.style.display = 'inline-block';
-    spinBtn.disabled = false;
-    spinBtn.textContent = 'Lancer la roulette !';
-  }
-  
-  const resultBox = document.getElementById('resultBox');
-  if (resultBox) {
-    resultBox.className = 'result-box';
-    resultBox.style.display = 'none';
-  }
-  
-  const quitBtn = document.getElementById('quitBtn');
-  if (quitBtn) quitBtn.classList.remove('visible');
-  
-  const bonusIndicator = document.getElementById('bonusIndicator');
-  if (bonusIndicator) bonusIndicator.classList.remove('visible');
-  
-  const warning5Stars = document.getElementById('warning5Stars');
-  if (warning5Stars) warning5Stars.classList.remove('visible');
-  
+  document.querySelectorAll('.star').forEach(star => star.classList.remove('selected'));
+  document.getElementById('wheel').classList.remove('spinning');
+  document.getElementById('spinBtn').style.display = 'inline-block';
+  document.getElementById('spinBtn').disabled = false;
+  document.getElementById('spinBtn').textContent = 'Lancer la roulette !';
+  document.getElementById('resultBox').className = 'result-box';
+  document.getElementById('resultBox').style.display = 'none';
+  document.getElementById('quitBtn').classList.remove('visible');
+  document.getElementById('bonusIndicator').classList.remove('visible');
+  document.getElementById('warning5Stars').classList.remove('visible');
   document.getElementById('accessCode').value = '';
   document.getElementById('userPrenom').value = '';
   document.getElementById('roulettePage').style.display = 'none';
   document.getElementById('welcomePage').style.display = 'flex';
-  
   updateProgress();
   updateDevinetteCounter();
 }
@@ -1922,46 +1959,33 @@ function logout() {
 function showMessage(type, text) {
   const overlay = document.getElementById('overlay');
   const message = document.getElementById('message');
-  if (message) {
-    message.className = 'message ' + type;
-    message.textContent = text;
-  }
-  if (overlay) overlay.style.display = 'block';
-  if (message) message.style.display = 'block';
+  message.className = 'message ' + type;
+  message.textContent = text;
+  overlay.style.display = 'block';
+  message.style.display = 'block';
   setTimeout(() => {
-    if (overlay) overlay.style.display = 'none';
-    if (message) message.style.display = 'none';
+    overlay.style.display = 'none';
+    message.style.display = 'none';
   }, 2500);
 }
 
+// ==================== INITIALISATION ====================
 const style = document.createElement('style');
 style.textContent = `@keyframes fall { to { transform: translateY(100vh) rotate(360deg); opacity: 0; } }`;
 document.head.appendChild(style);
 
-let isDown = false;
-let startX;
-let scrollLeft;
+let isDown = false, startX, scrollLeft;
 const slider = document.getElementById('carouselWrapper');
-
 if (slider) {
-  slider.addEventListener('mousedown', (e) => {
-    isDown = true;
-    startX = e.pageX - slider.offsetLeft;
-    scrollLeft = slider.scrollLeft;
-  });
+  slider.addEventListener('mousedown', (e) => { isDown = true; startX = e.pageX - slider.offsetLeft; scrollLeft = slider.scrollLeft; });
   slider.addEventListener('mouseleave', () => isDown = false);
   slider.addEventListener('mouseup', () => isDown = false);
-  slider.addEventListener('mousemove', (e) => {
-    if (!isDown) return;
-    e.preventDefault();
-    const x = e.pageX - slider.offsetLeft;
-    slider.scrollLeft = scrollLeft - (x - startX) * 2;
-  });
+  slider.addEventListener('mousemove', (e) => { if (!isDown) return; e.preventDefault(); slider.scrollLeft = scrollLeft - (e.pageX - slider.offsetLeft - startX) * 2; });
 }
 
 loadUsedCodes();
-loadAllVotes();
-console.log('🎉 Application prête !');
+loadFromGitHub();
+getClientIP();
 </script>
 </body>
 </html>
