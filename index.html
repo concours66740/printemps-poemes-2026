@@ -1121,7 +1121,9 @@
   <div class="legal-footer">
     Lycée Alfred Sauvy - 1 Carrer Alfred Sauvy, 66740 Villelongue-dels-Monts - 04 68 95 34 00
   </div>
-</div><!-- PAGE DE VOTE -->
+</div>
+
+<!-- PAGE DE VOTE -->
 <div id="votingPage">
   <div class="vote-header">
     <h1>⭐ Note tous les poèmes pour jouer</h1>
@@ -1235,7 +1237,7 @@
       <tr><th>Poème</th><th>Moyenne</th><th>Votes</th><th>Total étoiles</th></tr>
     </thead>
     <tbody id="rankingBody"></tbody>
-  ~
+  </table>
   
   <h4 style="margin-top: 20px;">🎁 Derniers gagnants</h4>
   <table class="ranking-table" id="winnersTable">
@@ -1243,7 +1245,7 @@
       <tr><th>Prénom</th><th>Lot gagné</th><th>Code</th><th>Date</th></tr>
     </thead>
     <tbody id="winnersBody"></tbody>
-  ~
+  </table>
 </div>
 
 <div class="overlay" id="overlay"></div>
@@ -1267,8 +1269,7 @@ let currentRanking = {};
 let GITHUB_CONFIG = {
   token: '',
   repo: 'printemps-poemes-2026',
-  owner: 'concours66740',
-  path: 'votes_data.json'
+  owner: 'concours66740'
 };
 
 if (typeof GITHUB_TOKEN !== 'undefined') {
@@ -1311,23 +1312,32 @@ function addVote(voteData) {
   sendToGitHub();
 }
 
+// ==================== FONCTION CORRIGÉE ====================
 async function sendToGitHub() {
   if (!GITHUB_CONFIG.token || GITHUB_CONFIG.token === '') {
     console.log('📁 GitHub non configuré');
     return;
   }
   
-  const data = {
+  // Structure complète avec TOUS les votes dans votes.json
+  const votesData = {
     lastUpdate: new Date().toISOString(),
     totalVotes: allVotes.length,
-    votes: allVotes,
+    allVotes: allVotes,
     ranking: currentRanking,
-    usedCodes: usedCodes
+    usedCodes: usedCodes,
+    stats: {
+      totalWhiteVotes: allVotes.filter(v => v.isWhiteVote).length,
+      totalWinners: allVotes.filter(v => v.isWinner).length,
+      remainingPrizes: getAvailablePrizes().length
+    }
   };
   
   try {
-    const content = btoa(unescape(encodeURIComponent(JSON.stringify(data, null, 2))));
-    const getResponse = await fetch(`https://api.github.com/repos/${GITHUB_CONFIG.owner}/${GITHUB_CONFIG.repo}/contents/${GITHUB_CONFIG.path}`, {
+    const content = btoa(unescape(encodeURIComponent(JSON.stringify(votesData, null, 2))));
+    
+    // Récupère le fichier existant pour obtenir son SHA
+    const getResponse = await fetch(`https://api.github.com/repos/${GITHUB_CONFIG.owner}/${GITHUB_CONFIG.repo}/contents/votes.json`, {
       headers: { 'Authorization': `token ${GITHUB_CONFIG.token}` }
     });
     
@@ -1337,20 +1347,26 @@ async function sendToGitHub() {
       sha = fileData.sha;
     }
     
-    await fetch(`https://api.github.com/repos/${GITHUB_CONFIG.owner}/${GITHUB_CONFIG.repo}/contents/${GITHUB_CONFIG.path}`, {
+    // Envoie le fichier votes.json
+    const putResponse = await fetch(`https://api.github.com/repos/${GITHUB_CONFIG.owner}/${GITHUB_CONFIG.repo}/contents/votes.json`, {
       method: 'PUT',
       headers: {
         'Authorization': `token ${GITHUB_CONFIG.token}`,
         'Content-Type': 'application/json'
       },
       body: JSON.stringify({
-        message: `Mise à jour des votes - ${new Date().toLocaleString()}`,
+        message: `Nouveau vote - ${new Date().toLocaleString()} - Total: ${allVotes.length} votes`,
         content: content,
         sha: sha
       })
     });
     
-    console.log('✅ Données envoyées à GitHub');
+    if (putResponse.ok) {
+      console.log(`✅ votes.json mis à jour - ${allVotes.length} votes enregistrés`);
+    } else {
+      const error = await putResponse.json();
+      console.error('❌ Erreur:', error);
+    }
   } catch(error) {
     console.error('❌ Erreur envoi GitHub:', error);
   }
@@ -1376,7 +1392,7 @@ function updateRanking() {
     }
     
     for (let i = 1; i <= TOTAL_POEMS; i++) {
-      if (vote.ratings[i]) {
+      if (vote.ratings && vote.ratings[i]) {
         currentRanking[i].totalStars += vote.ratings[i];
         currentRanking[i].voteCount++;
       }
@@ -1549,6 +1565,7 @@ function confirmQuitVote() {
   }
 }
 
+// ==================== FONCTION CORRIGÉE ====================
 async function submitWhiteVote() {
   if (checkIfAlreadyVoted()) { showAntiCheatWarning(); return; }
   
@@ -1566,7 +1583,9 @@ async function submitWhiteVote() {
     document.getElementById('spinBtn').style.display = 'none';
     document.getElementById('quitBtn').classList.add('visible');
   }, 500);
-}async function loadPoems() {
+}
+
+async function loadPoems() {
   try {
     console.log('Chargement de poems.html...');
     const response = await fetch('poems.html');
