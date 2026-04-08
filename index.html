@@ -1047,43 +1047,14 @@
   }
   
   @media (max-width: 600px) {
-    .lottery-banner h3 {
-      font-size: 1.2em;
-    }
-    
-    .roulette-wheel {
-      width: 150px;
-      height: 150px;
-    }
-    
-    .wheel-center {
-      width: 45px;
-      height: 45px;
-      font-size: 1.2em;
-    }
-    
-    .poeme-card {
-      flex: 0 0 85%;
-      min-width: 280px;
-      min-height: 520px;
-    }
-    
-    .stars {
-      font-size: 2em;
-    }
-    
-    .thanks-section {
-      padding: 20px 15px;
-    }
-    
-    .result-box .win-code {
-      font-size: 1em;
-    }
-    
-    .admin-modal {
-      width: 95%;
-      padding: 15px;
-    }
+    .lottery-banner h3 { font-size: 1.2em; }
+    .roulette-wheel { width: 150px; height: 150px; }
+    .wheel-center { width: 45px; height: 45px; font-size: 1.2em; }
+    .poeme-card { flex: 0 0 85%; min-width: 280px; min-height: 520px; }
+    .stars { font-size: 2em; }
+    .thanks-section { padding: 20px 15px; }
+    .result-box .win-code { font-size: 1em; }
+    .admin-modal { width: 95%; padding: 15px; }
   }
   
   .loader {
@@ -1096,7 +1067,6 @@
 </head>
 <body>
 
-<!-- Chargement de la configuration secrète -->
 <script src="config.js"></script>
 
 <div class="anti-cheat-warning" id="antiCheatWarning">
@@ -1151,9 +1121,7 @@
   <div class="legal-footer">
     Lycée Alfred Sauvy - 1 Carrer Alfred Sauvy, 66740 Villelongue-dels-Monts - 04 68 95 34 00
   </div>
-</div>
-
-<!-- PAGE DE VOTE -->
+</div><!-- PAGE DE VOTE -->
 <div id="votingPage">
   <div class="vote-header">
     <h1>⭐ Note tous les poèmes pour jouer</h1>
@@ -1267,15 +1235,15 @@
       <tr><th>Poème</th><th>Moyenne</th><th>Votes</th><th>Total étoiles</th></tr>
     </thead>
     <tbody id="rankingBody"></tbody>
-  ~~~
-
+  ~
+  
   <h4 style="margin-top: 20px;">🎁 Derniers gagnants</h4>
   <table class="ranking-table" id="winnersTable">
     <thead>
       <tr><th>Prénom</th><th>Lot gagné</th><th>Code</th><th>Date</th></tr>
     </thead>
     <tbody id="winnersBody"></tbody>
-  ~~
+  ~
 </div>
 
 <div class="overlay" id="overlay"></div>
@@ -1289,32 +1257,24 @@ let userPrenom = '';
 let ratings = {};
 let devinettesCorrectes = {};
 let correctGuesses = 0;
-let securityChecked = false;
 let ipAddress = null;
-let allPoemsData = [];
 let isWhiteVote = false;
 
-// ==================== STOCKAGE LOCAL ====================
 let usedCodes = [];
 let allVotes = [];
 let currentRanking = {};
 
-// ==================== CONFIGURATION GITHUB (depuis config.js) ====================
 let GITHUB_CONFIG = {
   token: '',
-  repo: 'printemps-poetes-2026',
+  repo: 'printemps-poemes-2026',
   owner: 'concours66740',
   path: 'votes_data.json'
 };
 
-// Récupérer la configuration depuis config.js
-if (typeof window.GITHUB_CONFIG !== 'undefined') {
-  GITHUB_CONFIG = window.GITHUB_CONFIG;
-} else if (typeof GITHUB_TOKEN !== 'undefined') {
+if (typeof GITHUB_TOKEN !== 'undefined') {
   GITHUB_CONFIG.token = GITHUB_TOKEN;
 }
 
-// ==================== FONCTIONS STOCKAGE LOCAL ====================
 function loadUsedCodes() {
   const stored = localStorage.getItem('poemes2026_used_codes');
   if (stored) usedCodes = JSON.parse(stored);
@@ -1351,10 +1311,9 @@ function addVote(voteData) {
   sendToGitHub();
 }
 
-// ==================== ENVOI VERS GITHUB ====================
 async function sendToGitHub() {
   if (!GITHUB_CONFIG.token || GITHUB_CONFIG.token === '') {
-    console.log('📁 GitHub non configuré - données sauvegardées localement');
+    console.log('📁 GitHub non configuré');
     return;
   }
   
@@ -1368,7 +1327,6 @@ async function sendToGitHub() {
   
   try {
     const content = btoa(unescape(encodeURIComponent(JSON.stringify(data, null, 2))));
-    
     const getResponse = await fetch(`https://api.github.com/repos/${GITHUB_CONFIG.owner}/${GITHUB_CONFIG.repo}/contents/${GITHUB_CONFIG.path}`, {
       headers: { 'Authorization': `token ${GITHUB_CONFIG.token}` }
     });
@@ -1398,38 +1356,6 @@ async function sendToGitHub() {
   }
 }
 
-async function loadFromGitHub() {
-  if (!GITHUB_CONFIG.token || GITHUB_CONFIG.token === '') {
-    console.log('📁 GitHub non configuré - chargement local');
-    loadAllVotes();
-    return;
-  }
-  
-  try {
-    const response = await fetch(`https://api.github.com/repos/${GITHUB_CONFIG.owner}/${GITHUB_CONFIG.repo}/contents/${GITHUB_CONFIG.path}`, {
-      headers: { 'Authorization': `token ${GITHUB_CONFIG.token}` }
-    });
-    
-    if (response.ok) {
-      const fileData = await response.json();
-      const content = JSON.parse(atob(fileData.content));
-      
-      if (content.votes) {
-        allVotes = content.votes;
-        usedCodes = content.usedCodes || [];
-        saveAllVotes();
-        saveUsedCodes();
-        updateRanking();
-        console.log('✅ Données chargées depuis GitHub');
-      }
-    }
-  } catch(error) {
-    console.log('📁 Aucune donnée GitHub existante');
-    loadAllVotes();
-  }
-}
-
-// ==================== CLASSEMENT ====================
 function updateRanking() {
   for (let i = 1; i <= TOTAL_POEMS; i++) {
     currentRanking[i] = { totalStars: 0, voteCount: 0, average: 0, whiteVotes: 0 };
@@ -1491,7 +1417,6 @@ function exportFullData() {
   URL.revokeObjectURL(url);
 }
 
-// ==================== ADMIN PANEL ====================
 function showAdminPanel() {
   refreshAdminPanel();
   document.getElementById('adminModal').classList.add('visible');
@@ -1539,7 +1464,6 @@ function refreshAdminPanel() {
   }
 }
 
-// ==================== GESTION DES LOTS ====================
 const PRIZES = {
   LIVRE: { count: 6, prefix: 'GAINLIVRE2026ID', suffix: 'SAUVY', emoji: '📚' },
   TROUSSE: { count: 10, prefix: 'GAINTROUSSESAUVY', suffix: '', emoji: '✏️' },
@@ -1571,7 +1495,6 @@ function drawRandomPrize() {
   return prize;
 }
 
-// ==================== CALCUL DES CHANCES ====================
 function calculateWinProbability() {
   if (isWhiteVote) return 0;
   let probability = 0.01;
@@ -1579,7 +1502,6 @@ function calculateWinProbability() {
   return Math.min(probability, 1);
 }
 
-// ==================== ADMIN IP ====================
 const ADMIN_IPS = ['90.113.230.208', '127.0.0.1', '192.168.1.', '::1'];
 
 function isAdminIp(ip) {
@@ -1604,7 +1526,6 @@ async function getClientIP() {
   }
 }
 
-// ==================== ANTI-TRICHE ====================
 function checkIfAlreadyVoted() {
   if (isAdminIp(ipAddress)) return false;
   return localStorage.getItem('poemes2026_hasVoted_' + userSessionId) === 'true';
@@ -1621,7 +1542,6 @@ function showAntiCheatWarning() {
   }
 }
 
-// ==================== VOTE BLANC ====================
 function confirmQuitVote() {
   const messages = ["🍕 Abandonner ? C'est comme une pizza sans fromage...", "🏃‍♂️ Tu pars déjà ?", "😴 La flemme de voter ?", "🐢 Même un escargot va jusqu'au bout !"];
   if (confirm(messages[Math.floor(Math.random() * messages.length)] + "\n\nTon vote sera BLANC et tu ne pourras pas gagner de lot")) {
@@ -1646,35 +1566,22 @@ async function submitWhiteVote() {
     document.getElementById('spinBtn').style.display = 'none';
     document.getElementById('quitBtn').classList.add('visible');
   }, 500);
-}
-
-// ==================== CHARGEMENT DES POÈMES ====================
-async function loadPoems() {
+}async function loadPoems() {
   try {
     console.log('Chargement de poems.html...');
     const response = await fetch('poems.html');
-    console.log('Statut de la réponse:', response.status);
-    
-    if (!response.ok) {
-      throw new Error(`HTTP ${response.status}: ${response.statusText}`);
-    }
+    if (!response.ok) throw new Error('poems.html non trouvé');
     
     const html = await response.text();
-    console.log('HTML reçu, longueur:', html.length);
-    
     const parser = new DOMParser();
     const doc = parser.parseFromString(html, 'text/html');
     const poemsData = doc.getElementById('poemes-data');
-    
-    if (!poemsData) {
-      throw new Error('poemes-data non trouvé dans poems.html');
-    }
+    if (!poemsData) throw new Error('poemes-data non trouvé');
     
     let poems = Array.from(poemsData.querySelectorAll('.poeme-card'));
     TOTAL_POEMS = poems.length;
-    console.log('Nombre de poèmes trouvés:', TOTAL_POEMS);
+    console.log('Nombre de poèmes:', TOTAL_POEMS);
     
-    // Mélanger les poèmes
     for (let i = poems.length - 1; i > 0; i--) {
       const j = Math.floor(Math.random() * (i + 1));
       [poems[i], poems[j]] = [poems[j], poems[i]];
@@ -1724,15 +1631,13 @@ async function loadPoems() {
       carousel.appendChild(newPoem);
     });
     
-    console.log(`${TOTAL_POEMS} poèmes chargés avec succès !`);
-    
+    console.log(`${TOTAL_POEMS} poèmes chargés`);
   } catch(error) {
-    console.error('Erreur détaillée:', error);
-    document.getElementById('carousel').innerHTML = `<div class="loader">❌ Erreur: ${error.message}<br>Vérifie que poems.html est dans le même dossier</div>`;
+    console.error('Erreur:', error);
+    document.getElementById('carousel').innerHTML = `<div class="loader">❌ Erreur: ${error.message}</div>`;
   }
 }
 
-// ==================== FONCTIONS DE VOTE ====================
 function checkAnswer(poemId, correctAnswer, validAnswersArray) {
   if (checkIfAlreadyVoted()) { showAntiCheatWarning(); return; }
   
@@ -1834,7 +1739,6 @@ function scrollCarousel(direction) {
   wrapper.scrollBy({ left: direction * wrapper.clientWidth * 0.9, behavior: 'smooth' });
 }
 
-// ==================== SOUMISSION ET ROULETTE ====================
 async function submitVotes() {
   if (checkIfAlreadyVoted()) { showAntiCheatWarning(); return; }
   if (Object.keys(ratings).length < TOTAL_POEMS) { showMessage('error', `Note les ${TOTAL_POEMS} poèmes !`); return; }
@@ -1917,7 +1821,6 @@ function createConfetti() {
   }
 }
 
-// ==================== PAGE D'ACCUEIL ====================
 async function enterVoting() {
   const accessCode = document.getElementById('accessCode').value.trim();
   const prenom = document.getElementById('userPrenom').value.trim();
@@ -1994,7 +1897,6 @@ function showMessage(type, text) {
   }, 2500);
 }
 
-// ==================== INITIALISATION ====================
 const style = document.createElement('style');
 style.textContent = `@keyframes fall { to { transform: translateY(100vh) rotate(360deg); opacity: 0; } }`;
 document.head.appendChild(style);
@@ -2009,7 +1911,7 @@ if (slider) {
 }
 
 loadUsedCodes();
-loadFromGitHub();
+loadAllVotes();
 getClientIP();
 console.log('🎉 Application prête !');
 </script>
