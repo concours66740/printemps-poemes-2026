@@ -46,6 +46,12 @@
     font-style: italic;
   }
   
+  .welcome-header p {
+    margin-top: 15px;
+    font-size: 0.9em;
+    color: #8b5a3c;
+  }
+  
   .ponge-presentation {
     background-color: #fff8e7;
     padding: 25px 20px;
@@ -1103,10 +1109,11 @@
   <div class="welcome-header">
     <h1>🌸 Printemps des Poètes 2026 🌸</h1>
     <h2>À la manière de Francis Ponge</h2>
+    <p>Un concours initié par les disciplines CDI et le français</p>
   </div>
   
   <div class="ponge-presentation">
-    <p><strong>Francis Ponge (1899-1988)</strong><br>Auteur du célèbre recueil « Le Parti pris des choses », Ponge cherche à rendre justice aux objets du quotidien — la pierre, le pain, la cigarette —, en leur donnant une voix poétique unique.</p>
+    <p><strong>Francis Ponge (1899-1988)</strong><br>Auteur du célèbre recueil « Le Parti pris des choses », Ponge cherche à rendre justice aux objets du quotidien comme la pierre, le pain ou la cigarette, en leur donnant une voix poétique unique.</p>
     <p class="quote">« L'objet est le meilleur modèle pour un art d'écriture. »</p>
   </div>
   
@@ -1260,15 +1267,15 @@
       <tr><th>Poème</th><th>Moyenne</th><th>Votes</th><th>Total étoiles</th></tr>
     </thead>
     <tbody id="rankingBody"></tbody>
-  没错
-  
+  ~~~
+
   <h4 style="margin-top: 20px;">🎁 Derniers gagnants</h4>
   <table class="ranking-table" id="winnersTable">
     <thead>
       <tr><th>Prénom</th><th>Lot gagné</th><th>Code</th><th>Date</th></tr>
     </thead>
     <tbody id="winnersBody"></tbody>
-  </table>
+  ~~
 </div>
 
 <div class="overlay" id="overlay"></div>
@@ -1644,16 +1651,30 @@ async function submitWhiteVote() {
 // ==================== CHARGEMENT DES POÈMES ====================
 async function loadPoems() {
   try {
+    console.log('Chargement de poems.html...');
     const response = await fetch('poems.html');
+    console.log('Statut de la réponse:', response.status);
+    
+    if (!response.ok) {
+      throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+    }
+    
     const html = await response.text();
+    console.log('HTML reçu, longueur:', html.length);
+    
     const parser = new DOMParser();
     const doc = parser.parseFromString(html, 'text/html');
     const poemsData = doc.getElementById('poemes-data');
-    if (!poemsData) throw new Error('poems.html non trouvé');
+    
+    if (!poemsData) {
+      throw new Error('poemes-data non trouvé dans poems.html');
+    }
     
     let poems = Array.from(poemsData.querySelectorAll('.poeme-card'));
     TOTAL_POEMS = poems.length;
+    console.log('Nombre de poèmes trouvés:', TOTAL_POEMS);
     
+    // Mélanger les poèmes
     for (let i = poems.length - 1; i > 0; i--) {
       const j = Math.floor(Math.random() * (i + 1));
       [poems[i], poems[j]] = [poems[j], poems[i]];
@@ -1702,8 +1723,12 @@ async function loadPoems() {
       
       carousel.appendChild(newPoem);
     });
+    
+    console.log(`${TOTAL_POEMS} poèmes chargés avec succès !`);
+    
   } catch(error) {
-    document.getElementById('carousel').innerHTML = '<div class="loader">❌ Erreur chargement des poèmes</div>';
+    console.error('Erreur détaillée:', error);
+    document.getElementById('carousel').innerHTML = `<div class="loader">❌ Erreur: ${error.message}<br>Vérifie que poems.html est dans le même dossier</div>`;
   }
 }
 
@@ -1986,6 +2011,7 @@ if (slider) {
 loadUsedCodes();
 loadFromGitHub();
 getClientIP();
+console.log('🎉 Application prête !');
 </script>
 </body>
 </html>
