@@ -1,0 +1,39 @@
+name: Déployer avec token secret
+
+on:
+  push:
+    branches: [ main ]
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Récupérer le code
+        uses: actions/checkout@v4
+      
+      - name: Créer config.js avec le token secret
+        run: |
+          echo "// Ce fichier est généré automatiquement par GitHub Actions" > config.js
+          echo "// Ne pas modifier manuellement" >> config.js
+          echo "" >> config.js
+          echo "const GITHUB_TOKEN_FROM_CONFIG = '${{ secrets.GITHUB_TOKEN }}';" >> config.js
+          echo "✅ config.js créé avec succès"
+      
+      - name: Vérifier que config.js a été créé
+        run: |
+          if [ -f "config.js" ]; then
+            echo "📄 config.js existe"
+            cat config.js
+          else
+            echo "❌ config.js n'a pas été créé"
+            exit 1
+          fi
+      
+      - name: Déployer sur GitHub Pages
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./
+          publish_branch: gh-pages
+          force_orphan: true
