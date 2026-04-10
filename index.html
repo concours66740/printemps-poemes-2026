@@ -1363,7 +1363,7 @@ async function sendToGitHub() {
     
     const getResponse = await fetch(`https://api.github.com/repos/${GITHUB_CONFIG.owner}/${GITHUB_CONFIG.repo}/contents/votes.json`, {
       headers: { 
-        'Authorization': `token ${GITHUB_CONFIG.token}`,
+        'Authorization': `Bearer ${GITHUB_CONFIG.token}`,
         'Accept': 'application/vnd.github.v3+json'
       }
     });
@@ -1383,7 +1383,7 @@ async function sendToGitHub() {
     const putResponse = await fetch(`https://api.github.com/repos/${GITHUB_CONFIG.owner}/${GITHUB_CONFIG.repo}/contents/votes.json`, {
       method: 'PUT',
       headers: {
-        'Authorization': `token ${GITHUB_CONFIG.token}`,
+        'Authorization': `Bearer ${GITHUB_CONFIG.token}`,
         'Content-Type': 'application/json',
         'Accept': 'application/vnd.github.v3+json'
       },
@@ -1551,7 +1551,7 @@ async function resetAllData() {
       const content = btoa(unescape(encodeURIComponent(JSON.stringify(emptyData, null, 2))));
       const getResponse = await fetch(`https://api.github.com/repos/${GITHUB_CONFIG.owner}/${GITHUB_CONFIG.repo}/contents/votes.json`, {
         headers: { 
-          'Authorization': `token ${GITHUB_CONFIG.token}`,
+          'Authorization': `Bearer ${GITHUB_CONFIG.token}`,
           'Accept': 'application/vnd.github.v3+json'
         }
       });
@@ -1565,7 +1565,7 @@ async function resetAllData() {
       await fetch(`https://api.github.com/repos/${GITHUB_CONFIG.owner}/${GITHUB_CONFIG.repo}/contents/votes.json`, {
         method: 'PUT',
         headers: {
-          'Authorization': `token ${GITHUB_CONFIG.token}`,
+          'Authorization': `Bearer ${GITHUB_CONFIG.token}`,
           'Content-Type': 'application/json',
           'Accept': 'application/vnd.github.v3+json'
         },
