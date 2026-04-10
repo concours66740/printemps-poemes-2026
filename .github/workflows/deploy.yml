@@ -14,10 +14,7 @@ jobs:
       
       - name: Créer config.js avec le token secret
         run: |
-          echo "// Ce fichier est généré automatiquement par GitHub Actions" > config.js
-          echo "// Ne pas modifier manuellement" >> config.js
-          echo "" >> config.js
-          echo "const GITHUB_TOKEN_FROM_CONFIG = '${{ secrets.GITHUB_TOKEN }}';" >> config.js
+          echo "const GITHUB_TOKEN_FROM_CONFIG = '${{ secrets.MY_GITHUB_TOKEN }}';" > config.js
           echo "✅ config.js créé avec succès"
       
       - name: Vérifier que config.js a été créé
