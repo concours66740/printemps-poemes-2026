@@ -5,6 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <title>Printemps des Poètes 2026 – Vote</title>
 <link href="https://fonts.googleapis.com/css2?family=Crimson+Text:ital,wght@0,400;0,600;0,700;1,400&display=swap" rel="stylesheet">
+<script src="config.js"></script>
 <style>
   * {
     box-sizing: border-box;
@@ -1085,9 +1086,6 @@
 </head>
 <body>
 
-<!-- Chargement du fichier config.js qui contient le token GitHub (uniquement en local) -->
-<script src="config.js"></script>
-
 <div class="anti-cheat-warning" id="antiCheatWarning">
   <h2>⚠️ Activité suspecte détectée</h2>
   <p>Tu as déjà participé au tirage au sort.<br>Un seul vote par personne est autorisé.</p>
@@ -1132,7 +1130,7 @@
         <input type="text" id="userPrenom" placeholder="Ton prénom" autocomplete="off">
       </div>
       
-      <button class="submit-identification" onclick="enterVoting()">Accéder aux poèmes →</button>
+      <button class="submit-identification" id="enterBtn">Accéder aux poèmes →</button>
       <div class="error-message" id="errorMsg">Code incorrect ou prénom manquant !</div>
     </div>
   </div>
@@ -1147,7 +1145,7 @@
   <div class="vote-header">
     <h1>⭐ Note tous les poèmes pour jouer</h1>
     <div class="user-badge" id="userBadge">Participant</div>
-    <button class="quit-vote-btn" onclick="confirmQuitVote()">🏃‍♂️ Abandonner</button>
+    <button class="quit-vote-btn" id="quitVoteBtn">🏃‍♂️ Abandonner</button>
   </div>
   
   <div class="instructions">
@@ -1165,17 +1163,17 @@
   </div>
 
   <div class="carousel-container">
-    <button class="nav-arrow prev" onclick="scrollCarousel(-1)">‹</button>
+    <button class="nav-arrow prev" id="prevBtn">‹</button>
     <div class="carousel-wrapper" id="carouselWrapper">
       <div class="carousel" id="carousel">
         <div class="loader">Chargement des poèmes...</div>
       </div>
     </div>
-    <button class="nav-arrow next" onclick="scrollCarousel(1)">›</button>
+    <button class="nav-arrow next" id="nextBtn">›</button>
   </div>
 
   <div class="submit-section">
-    <button class="submit-btn" id="submitBtn" onclick="submitVotes()" disabled>🎰 Lancer la roulette (tous les poèmes requis)</button>
+    <button class="submit-btn" id="submitBtn" disabled>🎰 Lancer la roulette (tous les poèmes requis)</button>
     <p class="progress-indicator" id="progress">0 / 0 poèmes notés</p>
     <div class="bonus-indicator" id="bonusIndicator">🎯 Bonus activé ! Tes chances sont multipliées !</div>
     <p class="warning-text" id="warningText">⚠️ Tu dois noter tous les poèmes pour participer au tirage.</p>
@@ -1204,14 +1202,14 @@
       </div>
     </div>
     
-    <button class="roulette-btn" id="spinBtn" onclick="spinRoulette()">Lancer la roulette !</button>
+    <button class="roulette-btn" id="spinBtn">Lancer la roulette !</button>
     
     <div class="result-box" id="resultBox">
       <h3 id="resultTitle"></h3>
       <p id="resultText"></p>
     </div>
     
-    <button class="quit-btn" id="quitBtn" onclick="logout()">← Retour à l'accueil</button>
+    <button class="quit-btn" id="quitBtn">← Retour à l'accueil</button>
   </div>
   
   <div class="legal-footer" style="margin-top: 20px; background: transparent; color: white;">
@@ -1221,11 +1219,11 @@
 
 <!-- Admin Panel -->
 <div class="admin-panel" id="adminPanel" style="display: none;">
-  <button class="admin-btn" onclick="showAdminPanel()">📊 Voir les résultats</button>
+  <button class="admin-btn" id="adminBtn">📊 Voir les résultats</button>
 </div>
 
 <div class="admin-modal" id="adminModal">
-  <span class="close-modal" onclick="closeAdminPanel()">&times;</span>
+  <span class="close-modal" id="closeModalBtn">&times;</span>
   <h3>📊 Tableau de bord des votes</h3>
   
   <div class="stats-grid" id="statsGrid">
@@ -1248,9 +1246,9 @@
   </div>
   
   <div style="display: flex; flex-wrap: wrap; justify-content: center; gap: 10px;">
-    <button class="refresh-stats" onclick="refreshAdminPanel()">🔄 Actualiser</button>
-    <button class="refresh-stats" onclick="exportFullData()" style="background: #4caf50;">📥 Exporter CSV</button>
-    <button class="reset-stats" onclick="resetAllData()">🗑️ RÉINITIALISER TOUS LES VOTES</button>
+    <button class="refresh-stats" id="refreshStatsBtn">🔄 Actualiser</button>
+    <button class="refresh-stats" id="exportBtn" style="background: #4caf50;">📥 Exporter CSV</button>
+    <button class="reset-stats" id="resetStatsBtn">🗑️ RÉINITIALISER TOUS LES VOTES</button>
   </div>
   
   <h4 style="margin-top: 20px;">🏆 Classement des poèmes</h4>
@@ -1294,13 +1292,15 @@ let GITHUB_CONFIG = {
   owner: 'concours66740'
 };
 
-// Récupération du token depuis config.js (chargé plus haut)
-if (typeof GITHUB_TOKEN !== 'undefined' && GITHUB_TOKEN !== '') {
-  GITHUB_CONFIG.token = GITHUB_TOKEN;
-  console.log('✅ Token GitHub chargé');
+// Chargement du token depuis config.js (fichier ignoré par git)
+if (typeof GITHUB_TOKEN_FROM_CONFIG !== 'undefined' && GITHUB_TOKEN_FROM_CONFIG !== '') {
+  GITHUB_CONFIG.token = GITHUB_TOKEN_FROM_CONFIG;
+  console.log('✅ Token GitHub chargé depuis config.js');
 } else {
   console.log('⚠️ Token GitHub non configuré - les votes seront sauvegardés localement uniquement');
 }
+
+// ==================== FONCTIONS PRINCIPALES ====================
 
 function loadUsedCodes() {
   const stored = localStorage.getItem('poemes2026_used_codes');
@@ -1348,7 +1348,6 @@ async function sendToGitHub() {
     lastUpdate: new Date().toISOString(),
     totalVotes: allVotes.length,
     allVotes: allVotes,
-    ranking: currentRanking,
     usedCodes: usedCodes,
     stats: {
       totalWhiteVotes: allVotes.filter(v => v.isWhiteVote).length,
@@ -1358,23 +1357,35 @@ async function sendToGitHub() {
   };
   
   try {
+    console.log('📤 Envoi vers GitHub...');
+    
     const content = btoa(unescape(encodeURIComponent(JSON.stringify(votesData, null, 2))));
     
     const getResponse = await fetch(`https://api.github.com/repos/${GITHUB_CONFIG.owner}/${GITHUB_CONFIG.repo}/contents/votes.json`, {
-      headers: { 'Authorization': `token ${GITHUB_CONFIG.token}` }
+      headers: { 
+        'Authorization': `token ${GITHUB_CONFIG.token}`,
+        'Accept': 'application/vnd.github.v3+json'
+      }
     });
     
     let sha = null;
     if (getResponse.ok) {
       const fileData = await getResponse.json();
       sha = fileData.sha;
+      console.log('✅ Fichier votes.json trouvé');
+    } else if (getResponse.status === 404) {
+      console.log('📄 Fichier votes.json va être créé');
+    } else {
+      const error = await getResponse.text();
+      console.error('❌ Erreur GET:', error);
     }
     
     const putResponse = await fetch(`https://api.github.com/repos/${GITHUB_CONFIG.owner}/${GITHUB_CONFIG.repo}/contents/votes.json`, {
       method: 'PUT',
       headers: {
         'Authorization': `token ${GITHUB_CONFIG.token}`,
-        'Content-Type': 'application/json'
+        'Content-Type': 'application/json',
+        'Accept': 'application/vnd.github.v3+json'
       },
       body: JSON.stringify({
         message: `Nouveau vote - ${new Date().toLocaleString()} - Total: ${allVotes.length} votes`,
@@ -1502,7 +1513,7 @@ function refreshAdminPanel() {
   }
 }
 
-// ==================== FONCTION RÉINITIALISATION ====================
+// ==================== RÉINITIALISATION ====================
 async function resetAllData() {
   if (!confirm("⚠️ ATTENTION ! Cette action va SUPPRIMER DÉFINITIVEMENT :\n\n- TOUS les votes\n- TOUS les codes gagnants\n- TOUS les classements\n\n❌ Action IRRÉVERSIBLE !\n\nContinuer ?")) {
     return;
@@ -1512,7 +1523,6 @@ async function resetAllData() {
     return;
   }
   
-  // Réinitialiser les données
   allVotes = [];
   usedCodes = [];
   currentRanking = {};
@@ -1520,7 +1530,6 @@ async function resetAllData() {
   devinettesCorrectes = {};
   correctGuesses = 0;
   
-  // Vider le localStorage
   localStorage.removeItem('poemes2026_all_votes');
   localStorage.removeItem('poemes2026_used_codes');
   localStorage.removeItem('poemes2026_ranking');
@@ -1529,13 +1538,11 @@ async function resetAllData() {
   updateRanking();
   refreshAdminPanel();
   
-  // Réinitialiser sur GitHub
   if (GITHUB_CONFIG.token && GITHUB_CONFIG.token !== '') {
     const emptyData = {
       lastUpdate: new Date().toISOString(),
       totalVotes: 0,
       allVotes: [],
-      ranking: {},
       usedCodes: [],
       stats: { totalWhiteVotes: 0, totalWinners: 0, remainingPrizes: 24 }
     };
@@ -1543,7 +1550,10 @@ async function resetAllData() {
     try {
       const content = btoa(unescape(encodeURIComponent(JSON.stringify(emptyData, null, 2))));
       const getResponse = await fetch(`https://api.github.com/repos/${GITHUB_CONFIG.owner}/${GITHUB_CONFIG.repo}/contents/votes.json`, {
-        headers: { 'Authorization': `token ${GITHUB_CONFIG.token}` }
+        headers: { 
+          'Authorization': `token ${GITHUB_CONFIG.token}`,
+          'Accept': 'application/vnd.github.v3+json'
+        }
       });
       
       let sha = null;
@@ -1556,7 +1566,8 @@ async function resetAllData() {
         method: 'PUT',
         headers: {
           'Authorization': `token ${GITHUB_CONFIG.token}`,
-          'Content-Type': 'application/json'
+          'Content-Type': 'application/json',
+          'Accept': 'application/vnd.github.v3+json'
         },
         body: JSON.stringify({
           message: `Réinitialisation totale - ${new Date().toLocaleString()}`,
@@ -1725,7 +1736,13 @@ async function loadPoems() {
       }
       
       const btn = newPoem.querySelector('.devinette-btn');
-      if (btn) btn.setAttribute('onclick', `checkAnswer(${poemId}, '${answer}', ${JSON.stringify(validAnswers).replace(/"/g, '&quot;')})`);
+      if (btn) {
+        const newBtn = btn.cloneNode(true);
+        btn.parentNode.replaceChild(newBtn, btn);
+        newBtn.addEventListener('click', (function(id, ans, valid) {
+          return function() { checkAnswer(id, ans, valid); };
+        })(poemId, answer, validAnswers));
+      }
       
       const resultDiv = newPoem.querySelector('.devinette-result');
       if (resultDiv) resultDiv.id = `result${poemId}`;
@@ -1733,9 +1750,13 @@ async function loadPoems() {
       const starsDiv = newPoem.querySelector('.stars');
       if (starsDiv) {
         starsDiv.setAttribute('data-poem', poemId);
-        starsDiv.querySelectorAll('.star').forEach((star, starIndex) => {
-          star.setAttribute('onclick', `rate(${poemId}, ${starIndex + 1})`);
-          star.classList.remove('selected', 'active');
+        const stars = starsDiv.querySelectorAll('.star');
+        stars.forEach((star, starIndex) => {
+          const newStar = star.cloneNode(true);
+          star.parentNode.replaceChild(newStar, star);
+          newStar.addEventListener('click', (function(id, rating) {
+            return function() { rate(id, rating); };
+          })(poemId, starIndex + 1));
         });
       }
       
@@ -1774,7 +1795,8 @@ function checkAnswer(poemId, correctAnswer, validAnswersArray) {
       resultDiv.textContent = '✓ Bonne réponse ! + Multiplicateur !';
       resultDiv.className = 'devinette-result success';
     }
-    input.closest('.poeme-card')?.classList.add('guessed');
+    const poemCard = input.closest('.poeme-card');
+    if (poemCard) poemCard.classList.add('guessed');
   } else {
     input.classList.add('wrong');
     const resultDiv = document.getElementById(`result${poemId}`);
@@ -1819,7 +1841,11 @@ function rate(poemId, stars) {
   const starsContainer = document.querySelector(`.stars[data-poem="${poemId}"]`);
   if (starsContainer) {
     starsContainer.querySelectorAll('.star').forEach((star, index) => {
-      star.classList.toggle('selected', index < stars);
+      if (index < stars) {
+        star.classList.add('selected');
+      } else {
+        star.classList.remove('selected');
+      }
     });
   }
   updateProgress();
@@ -2015,9 +2041,37 @@ function showMessage(type, text) {
   }, 2500);
 }
 
-const style = document.createElement('style');
-style.textContent = `@keyframes fall { to { transform: translateY(100vh) rotate(360deg); opacity: 0; } }`;
-document.head.appendChild(style);
+// ==================== INITIALISATION DES ÉVÉNEMENTS ====================
+document.addEventListener('DOMContentLoaded', function() {
+  document.getElementById('enterBtn').addEventListener('click', enterVoting);
+  document.getElementById('quitVoteBtn').addEventListener('click', confirmQuitVote);
+  document.getElementById('prevBtn').addEventListener('click', () => scrollCarousel(-1));
+  document.getElementById('nextBtn').addEventListener('click', () => scrollCarousel(1));
+  document.getElementById('submitBtn').addEventListener('click', submitVotes);
+  document.getElementById('spinBtn').addEventListener('click', spinRoulette);
+  document.getElementById('quitBtn').addEventListener('click', logout);
+  document.getElementById('adminBtn').addEventListener('click', showAdminPanel);
+  document.getElementById('closeModalBtn').addEventListener('click', closeAdminPanel);
+  document.getElementById('refreshStatsBtn').addEventListener('click', refreshAdminPanel);
+  document.getElementById('exportBtn').addEventListener('click', exportFullData);
+  document.getElementById('resetStatsBtn').addEventListener('click', resetAllData);
+  document.getElementById('overlay').addEventListener('click', closeAdminPanel);
+  
+  document.getElementById('antiCheatWarning').addEventListener('click', function() {
+    this.classList.remove('visible');
+    document.body.style.overflow = '';
+  });
+  
+  loadUsedCodes();
+  loadAllVotes();
+  getClientIP();
+  
+  console.log('🎉 Application prête !');
+});
+
+const styleElement = document.createElement('style');
+styleElement.textContent = `@keyframes fall { to { transform: translateY(100vh) rotate(360deg); opacity: 0; } }`;
+document.head.appendChild(styleElement);
 
 let isDown = false, startX, scrollLeft;
 const slider = document.getElementById('carouselWrapper');
@@ -2027,11 +2081,6 @@ if (slider) {
   slider.addEventListener('mouseup', () => isDown = false);
   slider.addEventListener('mousemove', (e) => { if (!isDown) return; e.preventDefault(); slider.scrollLeft = scrollLeft - (e.pageX - slider.offsetLeft - startX) * 2; });
 }
-
-loadUsedCodes();
-loadAllVotes();
-getClientIP();
-console.log('🎉 Application prête !');
 </script>
 </body>
 </html>
