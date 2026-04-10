@@ -1286,20 +1286,6 @@ let usedCodes = [];
 let allVotes = [];
 let currentRanking = {};
 
-let GITHUB_CONFIG = {
-  token: '',
-  repo: 'printemps-poemes-2026',
-  owner: 'concours66740'
-};
-
-// Chargement du token depuis config.js (fichier ignoré par git)
-if (typeof GITHUB_TOKEN_FROM_CONFIG !== 'undefined' && GITHUB_TOKEN_FROM_CONFIG !== '') {
-  GITHUB_CONFIG.token = GITHUB_TOKEN_FROM_CONFIG;
-  console.log('✅ Token GitHub chargé depuis config.js');
-} else {
-  console.log('⚠️ Token GitHub non configuré - les votes seront sauvegardés localement uniquement');
-}
-
 // ==================== FONCTIONS PRINCIPALES ====================
 
 function loadUsedCodes() {
@@ -1335,14 +1321,12 @@ function saveAllVotes() {
 function addVote(voteData) {
   allVotes.push(voteData);
   saveAllVotes();
-  sendToGitHub();
+  sendToJSONBin();
 }
 
-async function sendToGitHub() {
-  if (!GITHUB_CONFIG.token || GITHUB_CONFIG.token === '') {
-    console.log('📁 GitHub non configuré - vote sauvegardé localement');
-    return;
-  }
+// NOUVELLE FONCTION POUR JSONBin (sans token GitHub)
+async function sendToJSONBin() {
+  const url = 'https://api.jsonbin.io/v3/b/69d9378236566621a89ca20d';
   
   const votesData = {
     lastUpdate: new Date().toISOString(),
@@ -1357,51 +1341,23 @@ async function sendToGitHub() {
   };
   
   try {
-    console.log('📤 Envoi vers GitHub...');
-    
-    const content = btoa(unescape(encodeURIComponent(JSON.stringify(votesData, null, 2))));
-    
-    const getResponse = await fetch(`https://api.github.com/repos/${GITHUB_CONFIG.owner}/${GITHUB_CONFIG.repo}/contents/votes.json`, {
-      headers: { 
-        'Authorization': `Bearer ${GITHUB_CONFIG.token}`,
-        'Accept': 'application/vnd.github.v3+json'
-      }
-    });
-    
-    let sha = null;
-    if (getResponse.ok) {
-      const fileData = await getResponse.json();
-      sha = fileData.sha;
-      console.log('✅ Fichier votes.json trouvé');
-    } else if (getResponse.status === 404) {
-      console.log('📄 Fichier votes.json va être créé');
-    } else {
-      const error = await getResponse.text();
-      console.error('❌ Erreur GET:', error);
-    }
-    
-    const putResponse = await fetch(`https://api.github.com/repos/${GITHUB_CONFIG.owner}/${GITHUB_CONFIG.repo}/contents/votes.json`, {
+    console.log('📤 Envoi vers JSONBin...');
+    const response = await fetch(url, {
       method: 'PUT',
-      headers: {
-        'Authorization': `Bearer ${GITHUB_CONFIG.token}`,
+      headers: { 
         'Content-Type': 'application/json',
-        'Accept': 'application/vnd.github.v3+json'
+        'X-Master-Key': '$2a$10$4CP5yq9fJFUKyzp5Nd7W7uumcNF.sucCZHVORwq4aIZjDHxk89FCG'
       },
-      body: JSON.stringify({
-        message: `Nouveau vote - ${new Date().toLocaleString()} - Total: ${allVotes.length} votes`,
-        content: content,
-        sha: sha
-      })
+      body: JSON.stringify(votesData)
     });
     
-    if (putResponse.ok) {
+    if (response.ok) {
       console.log(`✅ votes.json mis à jour - ${allVotes.length} votes enregistrés`);
     } else {
-      const error = await putResponse.json();
-      console.error('❌ Erreur GitHub:', error.message);
+      console.error('❌ Erreur JSONBin:', response.status);
     }
   } catch(error) {
-    console.error('❌ Erreur envoi GitHub:', error.message);
+    console.error('❌ Erreur envoi JSONBin:', error.message);
   }
 }
 
@@ -1538,47 +1494,27 @@ async function resetAllData() {
   updateRanking();
   refreshAdminPanel();
   
-  if (GITHUB_CONFIG.token && GITHUB_CONFIG.token !== '') {
-    const emptyData = {
-      lastUpdate: new Date().toISOString(),
-      totalVotes: 0,
-      allVotes: [],
-      usedCodes: [],
-      stats: { totalWhiteVotes: 0, totalWinners: 0, remainingPrizes: 24 }
-    };
-    
-    try {
-      const content = btoa(unescape(encodeURIComponent(JSON.stringify(emptyData, null, 2))));
-      const getResponse = await fetch(`https://api.github.com/repos/${GITHUB_CONFIG.owner}/${GITHUB_CONFIG.repo}/contents/votes.json`, {
-        headers: { 
-          'Authorization': `Bearer ${GITHUB_CONFIG.token}`,
-          'Accept': 'application/vnd.github.v3+json'
-        }
-      });
-      
-      let sha = null;
-      if (getResponse.ok) {
-        const fileData = await getResponse.json();
-        sha = fileData.sha;
-      }
-      
-      await fetch(`https://api.github.com/repos/${GITHUB_CONFIG.owner}/${GITHUB_CONFIG.repo}/contents/votes.json`, {
-        method: 'PUT',
-        headers: {
-          'Authorization': `Bearer ${GITHUB_CONFIG.token}`,
-          'Content-Type': 'application/json',
-          'Accept': 'application/vnd.github.v3+json'
-        },
-        body: JSON.stringify({
-          message: `Réinitialisation totale - ${new Date().toLocaleString()}`,
-          content: content,
-          sha: sha
-        })
-      });
-      console.log('✅ votes.json réinitialisé sur GitHub');
-    } catch(error) {
-      console.error('❌ Erreur réinitialisation GitHub:', error);
-    }
+  // Réinitialiser JSONBin
+  const emptyData = {
+    lastUpdate: new Date().toISOString(),
+    totalVotes: 0,
+    allVotes: [],
+    usedCodes: [],
+    stats: { totalWhiteVotes: 0, totalWinners: 0, remainingPrizes: 24 }
+  };
+  
+  try {
+    await fetch('https://api.jsonbin.io/v3/b/69d9378236566621a89ca20d', {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json',
+        'X-Master-Key': '$2a$10$4CP5yq9fJFUKyzp5Nd7W7uumcNF.sucCZHVORwq4aIZjDHxk89FCG'
+      },
+      body: JSON.stringify(emptyData)
+    });
+    console.log('✅ JSONBin réinitialisé');
+  } catch(error) {
+    console.error('❌ Erreur réinitialisation JSONBin:', error);
   }
   
   showMessage('success', '✅ Tous les résultats ont été réinitialisés !');
@@ -1926,7 +1862,7 @@ function spinRoulette() {
             allVotes[lastVoteIndex].prizeWon = prize.label;
             allVotes[lastVoteIndex].winCode = prize.code;
             saveAllVotes();
-            sendToGitHub();
+            sendToJSONBin();
             
             resultBox.style.display = 'block';
             resultBox.className = 'result-box winner';
