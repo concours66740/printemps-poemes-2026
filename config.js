@@ -1,1 +1,1 @@
-const GITHUB_TOKEN_FROM_CONFIG = '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';
+const GITHUB_TOKEN_FROM_CONFIG = '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';
