@@ -5,7 +5,6 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <title>Printemps des Poètes 2026 – Vote</title>
 <link href="https://fonts.googleapis.com/css2?family=Crimson+Text:ital,wght@0,400;0,600;0,700;1,400&display=swap" rel="stylesheet">
-<script src="config.js"></script>
 <style>
   * {
     box-sizing: border-box;
@@ -1096,7 +1095,7 @@
   <div class="welcome-header">
     <h1>🌸 Printemps des Poètes 2026 🌸</h1>
     <h2>À la manière de Francis Ponge</h2>
-    <p>Un concours initié par le CDI du lycée Alfred Sauvy </p>
+    <p>Un concours initié par le CDI du lycée Alfred Sauvy</p>
   </div>
   
   <div class="ponge-presentation">
@@ -1106,9 +1105,8 @@
   
   <div class="lottery-banner">
     <h3>🎰 Tirage au sort à la fin !</h3>
-    <p>En participant, tu peux gagner une récompense.</p>
-    <p class="bonus">💡 Bonus : Devine le nom des objets pour chaque poème, pour <strong>multiplier</strong> tes chances !</p>
-    <p class="bonus">🎁 Lots : 6 livres • 10 trousses • 5 boîtes de chocolats • 3 surprises</p>
+    <p>En participant, tu peux gagner <strong>des lots à gagner</strong>.</p>
+    <p class="bonus">💡 Bonus : Devine le nom des objets pour chaque poème, pour <strong>multiplier</strong> tes chances (×1,3 par bonne réponse) !</p>
   </div>
   
   <div class="thanks-section">
@@ -1155,7 +1153,7 @@
   
   <div class="devinette-section">
     <h4>🎯 Devine le nom des objets pour chaque poème !</h4>
-    <p>Chaque bonne réponse <strong>multiplie tes chances</strong> de gagner !</p>
+    <p>Chaque bonne réponse <strong>multiplie tes chances par 1,3</strong> (×1,3 / ×1,69 / ×2,2...)</p>
     <div class="devinette-counter" id="devinetteCounter">0 / 0 devinettes correctes</div>
     <div class="warning-5stars" id="warning5Stars">
       🍕 Mmm... tu as mis 5 étoiles partout ? Ton vote sera considéré comme BLANC et tu ne pourras pas gagner de lot. Sois plus créatif ! 😜
@@ -1192,7 +1190,7 @@
     
     <div class="bonus-info" id="rouletteBonusInfo">
       <strong>Multiplicateur actif</strong><br>
-      <small>Chaque bonne réponse multiplie tes chances par 2 !</small>
+      <small>Chaque bonne réponse multiplie tes chances par 1,3 !</small>
     </div>
     
     <div class="roulette-wheel">
@@ -1286,7 +1284,31 @@ let usedCodes = [];
 let allVotes = [];
 let currentRanking = {};
 
-// ==================== FONCTIONS PRINCIPALES ====================
+// ==================== PRIX (3 paniers garnis, 4 clés USB 16G, 6 livres) ====================
+const PRIZES = {
+  PANIER_GARNI: { count: 3, prefix: 'GAINPANIERGARNISAUVY', suffix: '', emoji: '🧺', label: 'Panier garni' },
+  USB_16G: { count: 4, prefix: 'GAINCLEUSB16GSAUVY', suffix: '', emoji: '💾', label: 'Clé USB 16 Go' },
+  LIVRE: { count: 6, prefix: 'GAINLIVRESAUVY', suffix: '', emoji: '📚', label: 'Livre' }
+};
+
+function getAvailablePrizes() {
+  const available = [];
+  for (const [type, data] of Object.entries(PRIZES)) {
+    for (let i = 1; i <= data.count; i++) {
+      let code = `${data.prefix}${i}${data.suffix}`;
+      if (!isCodeUsed(code)) available.push({ type, code, emoji: data.emoji, label: `${data.label} n°${i}` });
+    }
+  }
+  return available;
+}
+
+function drawRandomPrize() {
+  const available = getAvailablePrizes();
+  if (available.length === 0) return null;
+  const prize = available[Math.floor(Math.random() * available.length)];
+  markCodeAsUsed(prize.code);
+  return prize;
+}
 
 function loadUsedCodes() {
   const stored = localStorage.getItem('poemes2026_used_codes');
@@ -1324,7 +1346,7 @@ function addVote(voteData) {
   sendToJSONBin();
 }
 
-// NOUVELLE FONCTION POUR JSONBin (sans token GitHub)
+// Envoi vers JSONBin
 async function sendToJSONBin() {
   const url = 'https://api.jsonbin.io/v3/b/69d9378236566621a89ca20d';
   
@@ -1500,7 +1522,7 @@ async function resetAllData() {
     totalVotes: 0,
     allVotes: [],
     usedCodes: [],
-    stats: { totalWhiteVotes: 0, totalWinners: 0, remainingPrizes: 24 }
+    stats: { totalWhiteVotes: 0, totalWinners: 0, remainingPrizes: 13 }
   };
   
   try {
@@ -1521,42 +1543,29 @@ async function resetAllData() {
   setTimeout(() => location.reload(), 2000);
 }
 
-const PRIZES = {
-  LIVRE: { count: 6, prefix: 'GAINLIVRE2026ID', suffix: 'SAUVY', emoji: '📚' },
-  TROUSSE: { count: 10, prefix: 'GAINTROUSSESAUVY', suffix: '', emoji: '✏️' },
-  CHOCOLAT: { count: 5, prefix: 'GAINCHOCOLATSAUVY', suffix: '', emoji: '🍫' },
-  SURPRISE: { count: 3, prefix: 'GAINCADEAUSURPRISESAUVY', suffix: '', emoji: '🎁' }
-};
-
-function getAvailablePrizes() {
-  const available = [];
-  for (const [type, data] of Object.entries(PRIZES)) {
-    for (let i = 1; i <= data.count; i++) {
-      let code = type === 'LIVRE' ? `${data.prefix}${i}${data.suffix}` : `${data.prefix}${i}`;
-      if (!isCodeUsed(code)) available.push({ type, code, emoji: data.emoji, label: getPrizeLabel(type, i) });
-    }
-  }
-  return available;
-}
-
-function getPrizeLabel(type, index) {
-  const labels = { LIVRE: `Livre n°${index}`, TROUSSE: `Trousse n°${index}`, CHOCOLAT: `Boîte de chocolats n°${index}`, SURPRISE: `Cadeau surprise n°${index}` };
-  return labels[type];
-}
-
-function drawRandomPrize() {
-  const available = getAvailablePrizes();
-  if (available.length === 0) return null;
-  const prize = available[Math.floor(Math.random() * available.length)];
-  markCodeAsUsed(prize.code);
-  return prize;
-}
-
+// ==================== NOUVELLE FORMULE DE PROBABILITÉ (équilibrée pour 300 participants) ====================
 function calculateWinProbability() {
   if (isWhiteVote) return 0;
-  let probability = 0.01;
-  for (let i = 0; i < correctGuesses; i++) probability *= 2;
-  return Math.min(probability, 1);
+  
+  // Base : 2,5% de chance (1 chance sur 40)
+  let probability = 0.025;
+  
+  // Multiplicateur ×1,3 par bonne réponse (récompense l'effort sans être démesuré)
+  // 6 bonnes réponses = 2,5% × 1,3^6 = 2,5% × 4,8 = 12%
+  for (let i = 0; i < correctGuesses; i++) {
+    probability = probability * 1.3;
+  }
+  
+  // Plafond à 15% max (1 chance sur 6,7)
+  return Math.min(probability, 0.15);
+}
+
+// Fonction pour obtenir le multiplicateur affiché
+function getMultiplier() {
+  if (correctGuesses === 0) return 1;
+  let multiplier = 1;
+  for (let i = 0; i < correctGuesses; i++) multiplier = multiplier * 1.3;
+  return Math.round(multiplier * 10) / 10;
 }
 
 const ADMIN_IPS = ['90.113.230.208', '127.0.0.1', '192.168.1.', '::1'];
@@ -1728,7 +1737,7 @@ function checkAnswer(poemId, correctAnswer, validAnswersArray) {
     input.disabled = true;
     const resultDiv = document.getElementById(`result${poemId}`);
     if (resultDiv) {
-      resultDiv.textContent = '✓ Bonne réponse ! + Multiplicateur !';
+      resultDiv.textContent = '✓ Bonne réponse ! Multiplicateur ×1,3 !';
       resultDiv.className = 'devinette-result success';
     }
     const poemCard = input.closest('.poeme-card');
@@ -1749,23 +1758,28 @@ function checkAnswer(poemId, correctAnswer, validAnswersArray) {
 
 function updateDevinetteCounter() {
   document.getElementById('devinetteCounter').textContent = `${correctGuesses} / ${TOTAL_POEMS} devinettes correctes`;
+  const multiplier = getMultiplier();
   if (correctGuesses >= 1) {
     document.getElementById('bonusIndicator').classList.add('visible');
-    document.getElementById('bonusIndicator').innerHTML = `🎯 Bonus actif ! x${Math.min(Math.pow(2, correctGuesses), 999)} de chances`;
+    document.getElementById('bonusIndicator').innerHTML = `🎯 Bonus actif ! Multiplicateur ×${multiplier} de chances !`;
   }
   updateRouletteBonusInfo();
 }
 
 function updateRouletteBonusInfo() {
   const info = document.getElementById('rouletteBonusInfo');
+  const multiplier = getMultiplier();
+  const proba = calculateWinProbability();
+  const probaPercent = Math.round(proba * 1000) / 10;
+  
   if (isWhiteVote) {
     info.innerHTML = '<strong>🍕 Vote blanc</strong><br>Pas de chance de gagner';
     info.classList.add('no-bonus');
   } else if (correctGuesses >= 1) {
-    info.innerHTML = `<strong style="color: #4caf50;">🎯 Bonus activé !</strong><br>Multiplicateur : x${Math.min(Math.pow(2, correctGuesses), 999)}<br><small>${correctGuesses} bonne${correctGuesses > 1 ? 's' : ''} réponse${correctGuesses > 1 ? 's' : ''}</small>`;
+    info.innerHTML = `<strong style="color: #4caf50;">🎯 Bonus actif !</strong><br>Multiplicateur : ×${multiplier}<br><small>${correctGuesses} bonne${correctGuesses > 1 ? 's' : ''} réponse${correctGuesses > 1 ? 's' : ''} → ${probaPercent}% de chances</small>`;
     info.classList.remove('no-bonus');
   } else {
-    info.innerHTML = '<strong>Aucun bonus activé</strong><br>Multiplicateur : x1<br><small>Devine des objets pour multiplier tes chances !</small>';
+    info.innerHTML = `<strong>Aucun bonus activé</strong><br>Multiplicateur : ×1<br><small>2,5% de chances de gagner<br>Devine des objets pour multiplier !</small>`;
     info.classList.add('no-bonus');
   }
 }
@@ -1854,7 +1868,9 @@ function spinRoulette() {
         resultTitle.textContent = '🍕 Vote blanc';
         resultText.innerHTML = 'Ton vote a été enregistré comme BLANC.<br>Pas de lot cette fois.';
       } else {
-        const isWinner = Math.random() < calculateWinProbability();
+        const winProbability = calculateWinProbability();
+        const isWinner = Math.random() < winProbability;
+        
         if (isWinner) {
           const prize = drawRandomPrize();
           if (prize) {
@@ -1869,19 +1885,20 @@ function spinRoulette() {
             resultTitle.innerHTML = `${prize.emoji} FÉLICITATIONS !`;
             resultText.innerHTML = `<strong>Tu as gagné : ${prize.label}</strong><br><br>
               <div class="win-code">🔑 CODE :<br><strong>${prize.code}</strong></div>
-              <div class="code-warning">📸 Prends ce code en photo !<br>🎁 Présente-le au CDI !</div>`;
+              <div class="code-warning">📸 Prends ce code en photo !<br>🎁 Présente-le au CDI pour récupérer ton lot !</div>`;
             createConfetti();
           } else {
             resultBox.style.display = 'block';
             resultBox.className = 'result-box loser';
             resultTitle.textContent = '😔 Plus de lots';
-            resultText.innerHTML = 'Tous les lots ont été distribués.';
+            resultText.innerHTML = 'Tous les lots ont été distribués. Désolé !';
           }
         } else {
           resultBox.style.display = 'block';
           resultBox.className = 'result-box loser';
           resultTitle.textContent = '🍀 Pas de chance...';
-          resultText.innerHTML = 'Merci d\'avoir participé !';
+          const probaPercent = Math.round(winProbability * 1000) / 10;
+          resultText.innerHTML = `Merci d'avoir participé !<br><small>Tu avais ${probaPercent}% de chances de gagner.</small>`;
         }
       }
     }
