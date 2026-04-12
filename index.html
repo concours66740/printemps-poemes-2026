@@ -1894,12 +1894,11 @@ function spinRoulette() {
             resultText.innerHTML = 'Tous les lots ont été distribués. Désolé !';
           }
         } else {
-          resultBox.style.display = 'block';
-          resultBox.className = 'result-box loser';
-          resultTitle.textContent = '🍀 Pas de chance...';
-          const probaPercent = Math.round(winProbability * 1000) / 10;
-          resultText.innerHTML = `Merci d'avoir participé !<br><small>Tu avais ${probaPercent}% de chances de gagner.</small>`;
-        }
+  resultBox.style.display = 'block';
+  resultBox.className = 'result-box loser';
+  resultTitle.textContent = '🍀 Pas de chance...';
+  resultText.innerHTML = 'Merci d\'avoir participé !<br>La roulette décidera peut-être mieux la prochaine fois.';
+}
       }
     }
     
