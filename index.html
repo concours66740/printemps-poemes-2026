@@ -2,7 +2,7 @@
 <html lang="fr">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, user-scalable=yes">
 <title>Printemps des Poètes 2026 – Vote</title>
 <link href="https://fonts.googleapis.com/css2?family=Crimson+Text:ital,wght@0,400;0,600;0,700;1,400&display=swap" rel="stylesheet">
 <style>
@@ -783,8 +783,8 @@
   }
   
   .result-box.white-vote {
-    background: #ff9800;
-    color: white;
+    background: #e0e0e0;
+    color: #555;
     display: block;
   }
   
@@ -1064,15 +1064,42 @@
     background: #c0392b;
   }
   
-  @media (max-width: 600px) {
+  /* ====== ADAPTATION MOBILE RENFORCÉE ====== */
+  @media (max-width: 768px) {
     .lottery-banner h3 { font-size: 1.2em; }
     .roulette-wheel { width: 150px; height: 150px; }
-    .poeme-card { flex: 0 0 85%; min-width: 280px; min-height: 520px; }
-    .stars { font-size: 1.8em; }
+    .poeme-card { 
+      flex: 0 0 90%; 
+      min-width: 260px; 
+      min-height: auto;
+      padding: 15px;
+    }
+    .stars { font-size: 1.8em; gap: 5px; }
     .thanks-section { padding: 20px 15px; }
     .result-box .win-code { font-size: 0.9em; }
     .admin-modal { width: 95%; padding: 15px; }
     .stats-grid { grid-template-columns: repeat(2, 1fr); }
+    .carousel-container { padding: 0 30px; }
+    .nav-arrow { width: 32px; height: 32px; font-size: 1.2em; }
+    .nav-arrow.prev { left: 0; }
+    .nav-arrow.next { right: 0; }
+    .vote-header { flex-direction: column; text-align: center; }
+    .devinette-section p { font-size: 0.85em; }
+    .devinette-counter { font-size: 0.85em; }
+    .bonus-indicator { font-size: 0.85em; }
+    .roulette-container { padding: 20px 15px; }
+    .result-box { padding: 20px; }
+    .result-box h3 { font-size: 1.5em; }
+  }
+  
+  @media (max-width: 480px) {
+    .poeme-card { flex: 0 0 95%; min-width: 240px; }
+    .stars { font-size: 1.5em; }
+    .carousel-container { padding: 0 20px; }
+    .nav-arrow { width: 28px; height: 28px; font-size: 1em; }
+    .submit-btn { padding: 12px 20px; font-size: 1em; }
+    .roulette-wheel { width: 120px; height: 120px; }
+    .bonus-info { font-size: 0.8em; }
   }
   
   .loader {
@@ -1156,7 +1183,7 @@
     <p>Chaque bonne réponse <strong>multiplie tes chances par 1,3</strong> (×1,3 / ×1,69 / ×2,2...)</p>
     <div class="devinette-counter" id="devinetteCounter">0 / 0 devinettes correctes</div>
     <div class="warning-5stars" id="warning5Stars">
-      🍕 Mmm... tu as mis 5 étoiles partout ? Ton vote sera considéré comme BLANC et tu ne pourras pas gagner de lot. Sois plus créatif ! 😜
+      ⚠️ Tu as mis 5 étoiles partout ? Ton vote sera considéré comme BLANC et tu ne pourras pas gagner de lot. Sois plus créatif ! 😜
     </div>
   </div>
 
@@ -1284,7 +1311,7 @@ let usedCodes = [];
 let allVotes = [];
 let currentRanking = {};
 
-// ==================== PRIX (3 paniers garnis, 4 clés USB 16G, 6 livres) ====================
+// ==================== PRIX (13 lots) ====================
 const PRIZES = {
   PANIER_GARNI: { count: 3, prefix: 'GAINPANIERGARNISAUVY', suffix: '', emoji: '🧺', label: 'Panier garni' },
   USB_16G: { count: 4, prefix: 'GAINCLEUSB16GSAUVY', suffix: '', emoji: '💾', label: 'Clé USB 16 Go' },
@@ -1346,7 +1373,6 @@ function addVote(voteData) {
   sendToJSONBin();
 }
 
-// Envoi vers JSONBin
 async function sendToJSONBin() {
   const url = 'https://api.jsonbin.io/v3/b/69d9378236566621a89ca20d';
   
@@ -1491,7 +1517,6 @@ function refreshAdminPanel() {
   }
 }
 
-// ==================== RÉINITIALISATION ====================
 async function resetAllData() {
   if (!confirm("⚠️ ATTENTION ! Cette action va SUPPRIMER DÉFINITIVEMENT :\n\n- TOUS les votes\n- TOUS les codes gagnants\n- TOUS les classements\n\n❌ Action IRRÉVERSIBLE !\n\nContinuer ?")) {
     return;
@@ -1516,7 +1541,6 @@ async function resetAllData() {
   updateRanking();
   refreshAdminPanel();
   
-  // Réinitialiser JSONBin
   const emptyData = {
     lastUpdate: new Date().toISOString(),
     totalVotes: 0,
@@ -1543,24 +1567,16 @@ async function resetAllData() {
   setTimeout(() => location.reload(), 2000);
 }
 
-// ==================== NOUVELLE FORMULE DE PROBABILITÉ (équilibrée pour 300 participants) ====================
+// ==================== FORMULE DE PROBABILITÉ ====================
 function calculateWinProbability() {
   if (isWhiteVote) return 0;
-  
-  // Base : 2,5% de chance (1 chance sur 40)
   let probability = 0.025;
-  
-  // Multiplicateur ×1,3 par bonne réponse (récompense l'effort sans être démesuré)
-  // 6 bonnes réponses = 2,5% × 1,3^6 = 2,5% × 4,8 = 12%
   for (let i = 0; i < correctGuesses; i++) {
     probability = probability * 1.3;
   }
-  
-  // Plafond à 15% max (1 chance sur 6,7)
   return Math.min(probability, 0.15);
 }
 
-// Fonction pour obtenir le multiplicateur affiché
 function getMultiplier() {
   if (correctGuesses === 0) return 1;
   let multiplier = 1;
@@ -1609,7 +1625,7 @@ function showAntiCheatWarning() {
 }
 
 function confirmQuitVote() {
-  const messages = ["🍕 Abandonner ? C'est comme une pizza sans fromage...", "🏃‍♂️ Tu pars déjà ?", "😴 La flemme de voter ?", "🐢 Même un escargot va jusqu'au bout !"];
+  const messages = ["Abandonner ? C'est dommage...", "🏃‍♂️ Tu pars déjà ?", "😴 La flemme de voter ?", "🐢 Même un escargot va jusqu'au bout !"];
   if (confirm(messages[Math.floor(Math.random() * messages.length)] + "\n\nTon vote sera BLANC et tu ne pourras pas gagner de lot")) {
     submitWhiteVote();
   }
@@ -1629,8 +1645,8 @@ async function submitWhiteVote() {
     const resultBox = document.getElementById('resultBox');
     resultBox.style.display = 'block';
     resultBox.className = 'result-box white-vote';
-    document.getElementById('resultTitle').textContent = '🍕 Vote blanc !';
-    document.getElementById('resultText').innerHTML = 'Ton vote a été enregistré comme BLANC.<br>Pas de lot cette fois, mais merci !';
+    document.getElementById('resultTitle').textContent = 'Vote blanc';
+    document.getElementById('resultText').innerHTML = 'Ton vote a été enregistré comme BLANC.<br>Tu ne peux pas gagner de lot cette fois.';
     document.getElementById('spinBtn').style.display = 'none';
     document.getElementById('quitBtn').classList.add('visible');
   }, 500);
@@ -1769,17 +1785,15 @@ function updateDevinetteCounter() {
 function updateRouletteBonusInfo() {
   const info = document.getElementById('rouletteBonusInfo');
   const multiplier = getMultiplier();
-  const proba = calculateWinProbability();
-  const probaPercent = Math.round(proba * 1000) / 10;
   
   if (isWhiteVote) {
-    info.innerHTML = '<strong>🍕 Vote blanc</strong><br>Pas de chance de gagner';
+    info.innerHTML = '<strong>Vote blanc</strong><br>Pas de chance de gagner';
     info.classList.add('no-bonus');
   } else if (correctGuesses >= 1) {
-    info.innerHTML = `<strong style="color: #4caf50;">🎯 Bonus actif !</strong><br>Multiplicateur : ×${multiplier}<br><small>${correctGuesses} bonne${correctGuesses > 1 ? 's' : ''} réponse${correctGuesses > 1 ? 's' : ''} → ${probaPercent}% de chances</small>`;
+    info.innerHTML = `<strong style="color: #4caf50;">🎯 Bonus actif !</strong><br>Multiplicateur : ×${multiplier}<br><small>${correctGuesses} bonne${correctGuesses > 1 ? 's' : ''} réponse${correctGuesses > 1 ? 's' : ''}</small>`;
     info.classList.remove('no-bonus');
   } else {
-    info.innerHTML = `<strong>Aucun bonus activé</strong><br>Multiplicateur : ×1<br><small>2,5% de chances de gagner<br>Devine des objets pour multiplier !</small>`;
+    info.innerHTML = `<strong>Aucun bonus activé</strong><br>Multiplicateur : ×1<br><small>Devine des objets pour multiplier tes chances !</small>`;
     info.classList.add('no-bonus');
   }
 }
@@ -1834,7 +1848,7 @@ async function submitVotes() {
   if (Object.keys(ratings).length < TOTAL_POEMS) { showMessage('error', `Note les ${TOTAL_POEMS} poèmes !`); return; }
   
   const allFive = Object.values(ratings).every(r => r === 5);
-  if (allFive && !confirm("🍕 Tu as mis 5 étoiles partout ! Ton vote sera BLANC. Confirmer ?")) return;
+  if (allFive && !confirm("⚠️ Tu as mis 5 étoiles partout ! Ton vote sera BLANC. Confirmer ?")) return;
   if (allFive) isWhiteVote = true;
   
   addVote({ sessionId: userSessionId, prenom: userPrenom, ratings, devinettesCorrectes, correctGuesses, isWhiteVote, timestamp: Date.now(), ip: ipAddress, isWinner: false });
@@ -1865,8 +1879,8 @@ function spinRoulette() {
       if (isWhiteVote) {
         resultBox.style.display = 'block';
         resultBox.className = 'result-box white-vote';
-        resultTitle.textContent = '🍕 Vote blanc';
-        resultText.innerHTML = 'Ton vote a été enregistré comme BLANC.<br>Pas de lot cette fois.';
+        resultTitle.textContent = 'Vote blanc';
+        resultText.innerHTML = 'Ton vote a été enregistré comme BLANC.<br>Tu ne peux pas gagner de lot cette fois.';
       } else {
         const winProbability = calculateWinProbability();
         const isWinner = Math.random() < winProbability;
@@ -1894,11 +1908,11 @@ function spinRoulette() {
             resultText.innerHTML = 'Tous les lots ont été distribués. Désolé !';
           }
         } else {
-  resultBox.style.display = 'block';
-  resultBox.className = 'result-box loser';
-  resultTitle.textContent = '🍀 Pas de chance...';
-  resultText.innerHTML = 'Merci d\'avoir participé !<br>La roulette décidera peut-être mieux la prochaine fois.';
-}
+          resultBox.style.display = 'block';
+          resultBox.className = 'result-box loser';
+          resultTitle.textContent = '🍀 Pas de chance...';
+          resultText.innerHTML = 'Merci d\'avoir participé !<br>La roulette décidera peut-être mieux la prochaine fois.';
+        }
       }
     }
     
@@ -1993,7 +2007,6 @@ function showMessage(type, text) {
   }, 2500);
 }
 
-// ==================== INITIALISATION DES ÉVÉNEMENTS ====================
 document.addEventListener('DOMContentLoaded', function() {
   document.getElementById('enterBtn').addEventListener('click', enterVoting);
   document.getElementById('quitVoteBtn').addEventListener('click', confirmQuitVote);
