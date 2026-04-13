@@ -1373,36 +1373,73 @@ function addVote(voteData) {
   sendToJSONBin();
 }
 
+// ==================== FONCTION CORRIGÉE : FUSION DES DONNÉES ====================
 async function sendToJSONBin() {
   const url = 'https://api.jsonbin.io/v3/b/69dc8778aaba882197f22168';
-  
-  const votesData = {
-    lastUpdate: new Date().toISOString(),
-    totalVotes: allVotes.length,
-    allVotes: allVotes,
-    usedCodes: usedCodes,
-    stats: {
-      totalWhiteVotes: allVotes.filter(v => v.isWhiteVote).length,
-      totalWinners: allVotes.filter(v => v.isWinner).length,
-      remainingPrizes: getAvailablePrizes().length
-    }
-  };
+  const masterKey = '$2a$10$ZsDHpdIWWbUEB2a1AH5uk.U0SSAAPkZE89d8WpdpOrXB7jcca1rCK';
   
   try {
-    console.log('📤 Envoi vers JSONBin...');
-    const response = await fetch(url, {
+    // 1. Récupérer les données existantes
+    const getResponse = await fetch(url, {
+      method: 'GET',
+      headers: {
+        'X-Master-Key': masterKey
+      }
+    });
+    
+    let existingData = { allVotes: [], usedCodes: [], stats: {} };
+    
+    if (getResponse.ok) {
+      const json = await getResponse.json();
+      existingData = json.record;
+      console.log('📥 Données existantes chargées:', existingData.allVotes?.length || 0, 'votes');
+    } else {
+      console.log('📭 Aucune donnée existante, création d\'un nouveau bin');
+    }
+    
+    // 2. Fusionner les votes (sans doublons par sessionId)
+    const allExistingVotes = existingData.allVotes || [];
+    const allExistingCodes = existingData.usedCodes || [];
+    
+    // Fusion des votes
+    const mergedVotes = [...allExistingVotes];
+    for (const newVote of allVotes) {
+      const exists = mergedVotes.some(v => v.sessionId === newVote.sessionId);
+      if (!exists) {
+        mergedVotes.push(newVote);
+      }
+    }
+    
+    // Fusion des codes utilisés
+    const mergedCodes = [...new Set([...allExistingCodes, ...usedCodes])];
+    
+    // 3. Préparer les données complètes
+    const votesData = {
+      lastUpdate: new Date().toISOString(),
+      totalVotes: mergedVotes.length,
+      allVotes: mergedVotes,
+      usedCodes: mergedCodes,
+      stats: {
+        totalWhiteVotes: mergedVotes.filter(v => v.isWhiteVote).length,
+        totalWinners: mergedVotes.filter(v => v.isWinner).length,
+        remainingPrizes: getAvailablePrizes().length
+      }
+    };
+    
+    // 4. Envoyer les données fusionnées
+    const putResponse = await fetch(url, {
       method: 'PUT',
-      headers: { 
+      headers: {
         'Content-Type': 'application/json',
-        'X-Master-Key': '$2a$10$ZsDHpdIWWbUEB2a1AH5uk.U0SSAAPkZE89d8WpdpOrXB7jcca1rCK'
+        'X-Master-Key': masterKey
       },
       body: JSON.stringify(votesData)
     });
     
-    if (response.ok) {
-      console.log(`✅ votes.json mis à jour - ${allVotes.length} votes enregistrés`);
+    if (putResponse.ok) {
+      console.log(`✅ votes.json mis à jour - ${mergedVotes.length} votes au total`);
     } else {
-      console.error('❌ Erreur JSONBin:', response.status);
+      console.error('❌ Erreur JSONBin:', putResponse.status);
     }
   } catch(error) {
     console.error('❌ Erreur envoi JSONBin:', error.message);
