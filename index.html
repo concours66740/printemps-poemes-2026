@@ -1311,11 +1311,11 @@ let usedCodes = [];
 let allVotes = [];
 let currentRanking = {};
 
-// ==================== PRIX (13 lots) ====================
+// ==================== PRIX (4 livres, 2 paniers garnis, 3 clés USB = 9 lots) ====================
 const PRIZES = {
-  PANIER_GARNI: { count: 3, prefix: 'GAINPANIERGARNISAUVY', suffix: '', emoji: '🧺', label: 'Panier garni' },
-  USB_16G: { count: 4, prefix: 'GAINCLEUSB16GSAUVY', suffix: '', emoji: '💾', label: 'Clé USB 16 Go' },
-  LIVRE: { count: 6, prefix: 'GAINLIVRESAUVY', suffix: '', emoji: '📚', label: 'Livre' }
+  PANIER_GARNI: { count: 2, prefix: 'GAINPANIERGARNISAUVY', suffix: '', emoji: '🧺', label: 'Panier garni' },
+  USB_16G: { count: 3, prefix: 'GAINCLEUSB16GSAUVY', suffix: '', emoji: '💾', label: 'Clé USB 16 Go' },
+  LIVRE: { count: 4, prefix: 'GAINLIVRESAUVY', suffix: '', emoji: '📚', label: 'Livre' }
 };
 
 function getAvailablePrizes() {
@@ -1546,7 +1546,7 @@ async function resetAllData() {
     totalVotes: 0,
     allVotes: [],
     usedCodes: [],
-    stats: { totalWhiteVotes: 0, totalWinners: 0, remainingPrizes: 13 }
+    stats: { totalWhiteVotes: 0, totalWinners: 0, remainingPrizes: 9 }
   };
   
   try {
